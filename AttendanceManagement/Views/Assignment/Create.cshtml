@@ -1,0 +1,128 @@
+﻿@model AttendanceManagement.ViewModels.CreateAssignmentViewModel
+@{
+    ViewData["Title"] = "Tạo bài tập";
+}
+
+<div class="glass-bg-purple">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-tasks icon-glow"></i> Tạo bài tập mới
+                        </h4>
+                    </div>
+                    <div class="glass-body">
+                        <div class="glass-alert-info mb-4">
+                            <strong><i class="fas fa-chalkboard"></i> Lớp học:</strong> @ViewBag.ClassName
+                        </div>
+
+                        <form asp-action="Create" method="post" enctype="multipart/form-data">
+                            <input type="hidden" asp-for="ClassId" />
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="mb-4">
+                                <label asp-for="Title" class="form-label">
+                                    <i class="fas fa-heading"></i> Tiêu đề bài tập
+                                </label>
+                                <input asp-for="Title" class="form-control glass-input" 
+                                       placeholder="VD: Bài tập tuần 1 - HTML/CSS" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Description" class="form-label">
+                                    <i class="fas fa-align-left"></i> Mô tả yêu cầu
+                                </label>
+                                <textarea asp-for="Description" class="form-control glass-input" rows="6" 
+                                          placeholder="Mô tả chi tiết yêu cầu bài tập, tiêu chí đánh giá..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="DueDate" class="form-label">
+                                        <i class="fas fa-calendar-alt"></i> Hạn nộp
+                                    </label>
+                                    <input asp-for="DueDate" class="form-control glass-input" type="datetime-local" />
+                                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="MaxScore" class="form-label">
+                                        <i class="fas fa-star"></i> Điểm tối đa
+                                    </label>
+                                    <input asp-for="MaxScore" class="form-control glass-input" type="number" value="10" />
+                                    <span asp-validation-for="MaxScore" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="glass-box">
+                                    <div class="form-check">
+                                        <input asp-for="AllowLateSubmission" class="form-check-input" 
+                                               type="checkbox" style="width: 20px; height: 20px; cursor: pointer;" />
+                                        <label asp-for="AllowLateSubmission" class="form-check-label text-white" 
+                                               style="margin-left: 10px; cursor: pointer;">
+                                            Cho phép nộp muộn
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Attachment" class="form-label">
+                                    <i class="fas fa-paperclip"></i> Tài liệu hướng dẫn (tùy chọn)
+                                </label>
+                                <input asp-for="Attachment" class="form-control glass-input" type="file" 
+                                       style="padding: 12px;" />
+                                <div class="form-text text-glass-muted mt-2">
+                                    <i class="fas fa-info-circle"></i> Đính kèm file PDF, Word, hoặc tài liệu hướng dẫn
+                                </div>
+                                <span asp-validation-for="Attachment" class="text-danger"></span>
+                            </div>
+
+                            <div class="glass-divider"></div>
+
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-gradient-success btn-lg">
+                                    <i class="fas fa-save"></i> Tạo bài tập
+                                </button>
+                                <a asp-controller="Class" asp-action="Detail" asp-route-id="@Model.ClassId" 
+                                   class="btn btn-gradient-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="glass-alert-warning mt-4">
+                            <strong><i class="fas fa-lightbulb"></i> Mẹo:</strong>
+                            <ul class="mb-0 mt-2" style="padding-left: 20px;">
+                                <li>Đặt deadline hợp lý để sinh viên có đủ thời gian hoàn thành</li>
+                                <li>Mô tả rõ ràng yêu cầu và tiêu chí đánh giá</li>
+                                <li>Đính kèm tài liệu mẫu hoặc hướng dẫn chi tiết</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Set default due date to 1 week from now
+        document.addEventListener('DOMContentLoaded', function() {
+            var dueDateInput = document.querySelector('input[name="DueDate"]');
+            if (dueDateInput && !dueDateInput.value) {
+                var nextWeek = new Date();
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                nextWeek.setHours(23, 59);
+                dueDateInput.value = nextWeek.toISOString().slice(0, 16);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,626 @@
+/* ============================================
+   GLASS MORPHISM LUXURY UI - BRIGHT & CHEERFUL EDITION
+   Modern, Fresh, Vibrant Color Scheme
+   ============================================ */
+
+/* ============================================
+   1. GRADIENT BACKGROUNDS - BRIGHT & VIBRANT
+   ============================================ */
+
+/* Pink Pastel - Soft & Sweet */
+.glass-bg-pink {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFE5F0 0%, #FFD6E8 25%, #FFC7E0 50%, #FFB8D8 75%, #FFA9D0 100%);
+    background-attachment: fixed;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-bg-pink::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.4), transparent);
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+    animation: float 20s infinite ease-in-out;
+}
+
+.glass-bg-pink::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 192, 203, 0.3), transparent);
+    border-radius: 50%;
+    bottom: -100px;
+    left: -100px;
+    animation: float 15s infinite ease-in-out reverse;
+}
+
+/* Purple Lavender - Fresh & Modern */
+.glass-bg-purple {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #F0E6FF 0%, #E6D9FF 25%, #DDCCFF 50%, #D4BFFF 75%, #CBB3FF 100%);
+    background-attachment: fixed;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-bg-purple::before {
+    content: '';
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(186, 148, 255, 0.35), transparent);
+    border-radius: 50%;
+    top: -80px;
+    left: -80px;
+    animation: float 18s infinite ease-in-out;
+}
+
+/* Blue Sky - Bright & Clean */
+.glass-bg-blue {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 25%, #90CAF9 50%, #64B5F6 75%, #42A5F5 100%);
+    background-attachment: fixed;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-bg-blue::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.25), transparent);
+    border-radius: 50%;
+    top: 50%;
+    right: -150px;
+    animation: float 25s infinite ease-in-out;
+}
+
+/* Green Mint - Fresh & Energetic */
+.glass-bg-green {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 25%, #A5D6A7 50%, #81C784 75%, #66BB6A 100%);
+    background-attachment: fixed;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-bg-green::before {
+    content: '';
+    position: absolute;
+    width: 550px;
+    height: 550px;
+    background: radial-gradient(circle, rgba(76, 175, 80, 0.3), transparent);
+    border-radius: 50%;
+    bottom: -100px;
+    right: -100px;
+    animation: float 22s infinite ease-in-out;
+}
+
+/* Orange Coral - Warm & Vibrant */
+.glass-bg-orange {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 25%, #FFCC80 50%, #FFB74D 75%, #FFA726 100%);
+    background-attachment: fixed;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-bg-orange::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 152, 0, 0.3), transparent);
+    border-radius: 50%;
+    top: 50%;
+    left: -150px;
+    animation: float 20s infinite ease-in-out;
+}
+
+/* Indigo Twilight - Cool & Elegant */
+.glass-bg-indigo {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #E8EAF6 0%, #C5CAE9 25%, #9FA8DA 50%, #7986CB 75%, #5C6BC0 100%);
+    background-attachment: fixed;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-bg-indigo::before {
+    content: '';
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(63, 81, 181, 0.3), transparent);
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+    animation: float 24s infinite ease-in-out;
+}
+
+/* ============================================
+   2. GLASS CARDS - BRIGHTER & MORE VISIBLE
+   ============================================ */
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.glass-card-sm {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    padding: 25px;
+    transition: all 0.3s ease;
+}
+
+/* ============================================
+   3. GLASS COMPONENTS - BRIGHT COLORS
+   ============================================ */
+
+.glass-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+    backdrop-filter: blur(15px);
+    border-radius: 20px 20px 0 0;
+    padding: 25px 30px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+    margin: -30px -30px 30px -30px;
+}
+
+.glass-body {
+    padding: 0;
+}
+
+.glass-box {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 15px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.glass-box:hover {
+    background: rgba(255, 255, 255, 0.75);
+    transform: translateX(5px);
+}
+
+/* ============================================
+   4. GRADIENT BUTTONS - VIBRANT COLORS
+   ============================================ */
+
+.btn-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 15px;
+    font-weight: 600;
+    text-transform: none;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-gradient-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-gradient-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+    color: white;
+}
+
+.btn-gradient-primary:hover::before {
+    left: 100%;
+}
+
+.btn-gradient-success {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 15px;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-success:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(86, 171, 47, 0.5);
+    color: white;
+}
+
+.btn-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 15px;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-info:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(79, 172, 254, 0.5);
+    color: white;
+}
+
+.btn-gradient-danger {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 15px;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-danger:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(240, 147, 251, 0.5);
+    color: white;
+}
+
+.btn-gradient-secondary {
+    background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 15px;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(134, 143, 150, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(134, 143, 150, 0.4);
+    color: white;
+}
+
+/* ============================================
+   5. FORM INPUTS - BRIGHTER GLASS EFFECT
+   ============================================ */
+
+.glass-input {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 12px !important;
+    padding: 12px 18px !important;
+    color: #2d3748 !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.85) !important;
+    border-color: rgba(102, 126, 234, 0.8) !important;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15),
+                0 6px 20px rgba(0, 0, 0, 0.12);
+    outline: none;
+    transform: translateY(-2px);
+}
+
+.glass-input::placeholder {
+    color: rgba(45, 55, 72, 0.5);
+}
+
+.form-label {
+    color: #2d3748;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   6. ALERTS - BRIGHT & VISIBLE
+   ============================================ */
+
+.glass-alert-info {
+    background: rgba(33, 150, 243, 0.15);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #2196F3;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #1565C0;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.15);
+}
+
+.glass-alert-success {
+    background: rgba(76, 175, 80, 0.15);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #4CAF50;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #2E7D32;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+}
+
+.glass-alert-warning {
+    background: rgba(255, 152, 0, 0.15);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #FF9800;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #E65100;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.15);
+}
+
+.glass-alert-danger {
+    background: rgba(244, 67, 54, 0.15);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #F44336;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #C62828;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.15);
+}
+
+/* ============================================
+   7. TEXT COLORS - DARK & READABLE
+   ============================================ */
+
+.text-glass {
+    color: #2d3748;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.text-glass-muted {
+    color: #4a5568;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.text-white {
+    color: #1a202c !important;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.section-title {
+    color: #2d3748;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================
+   8. BADGES - COLORFUL & BRIGHT
+   ============================================ */
+
+.badge-glass {
+    background: rgba(102, 126, 234, 0.25);
+    backdrop-filter: blur(8px);
+    color: #4c51bf;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+/* ============================================
+   9. TABLES - CLEAN & BRIGHT
+   ============================================ */
+
+.glass-table {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.glass-table thead {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+.glass-table thead th {
+    color: #2d3748;
+    font-weight: 700;
+    padding: 16px;
+    border: none;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.glass-table tbody tr {
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.75);
+    transform: scale(1.01);
+}
+
+.glass-table tbody td {
+    color: #2d3748;
+    padding: 14px 16px;
+    border: none;
+    font-weight: 500;
+}
+
+/* ============================================
+   10. UTILITY CLASSES
+   ============================================ */
+
+.glass-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+    margin: 25px 0;
+    border: none;
+}
+
+.glass-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.glass-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+}
+
+.glass-link:hover {
+    color: #764ba2;
+    text-decoration: none;
+}
+
+.glass-link:hover::after {
+    width: 100%;
+}
+
+.icon-glow {
+    filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.6));
+    animation: pulse 2s infinite;
+}
+
+/* ============================================
+   11. ANIMATIONS
+   ============================================ */
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(5deg); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   12. RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .glass-card {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .glass-header {
+        padding: 20px;
+        margin: -20px -20px 20px -20px;
+    }
+
+    .btn-gradient-primary,
+    .btn-gradient-success,
+    .btn-gradient-info,
+    .btn-gradient-danger,
+    .btn-gradient-secondary {
+        padding: 10px 24px;
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================================
+   13. NAVBAR & FOOTER GLASS EFFECT
+   ============================================ */
+
+.navbar {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.navbar-brand,
+.nav-link {
+    color: #2d3748 !important;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.nav-link:hover {
+    color: #667eea !important;
+}
+
+footer {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border-top: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.1);
+}

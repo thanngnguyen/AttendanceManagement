@@ -1,0 +1,329 @@
+﻿@model AttendanceManagement.ViewModels.CreateAttendanceSlotViewModel
+@{
+    ViewData["Title"] = "Tạo phiên điểm danh";
+}
+
+<div class="glass-bg-purple">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-clipboard-check icon-glow"></i> 
+                            Tạo phiên điểm danh mới
+                        </h4>
+                    </div>
+                    
+                    <div class="glass-body">
+                        <div class="glass-alert-info mb-4">
+                            <strong><i class="fas fa-chalkboard"></i> Lớp học:</strong> @ViewBag.ClassName
+                        </div>
+
+                        <form asp-action="CreateSlot" method="post" id="createSlotForm">
+                            <input type="hidden" asp-for="ClassId" />
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="mb-4">
+                                <label asp-for="SlotName" class="form-label">
+                                    <i class="fas fa-tag"></i> Tên phiên điểm danh
+                                </label>
+                                <input asp-for="SlotName" class="form-control glass-input" 
+                                       placeholder="VD: Điểm danh buổi 1 - 15/12/2024" required />
+                                <span asp-validation-for="SlotName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Description" class="form-label">
+                                    <i class="fas fa-align-left"></i> Mô tả
+                                </label>
+                                <textarea asp-for="Description" class="form-control glass-input" rows="2" 
+                                          placeholder="Ghi chú về phiên điểm danh..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="StartTime" class="form-label">
+                                        <i class="fas fa-clock"></i> Thời gian bắt đầu
+                                    </label>
+                                    <input asp-for="StartTime" class="form-control glass-input" 
+                                           type="datetime-local" required />
+                                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="EndTime" class="form-label">
+                                        <i class="fas fa-clock"></i> Thời gian kết thúc
+                                    </label>
+                                    <input asp-for="EndTime" class="form-control glass-input" 
+                                           type="datetime-local" required />
+                                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="glass-divider"></div>
+
+                            <h5 class="section-title">
+                                <i class="fas fa-map-marker-alt"></i> 
+                                Cài đặt vị trí điểm danh
+                            </h5>
+                            
+                            <div class="glass-alert-warning mb-4">
+                                <i class="fas fa-exclamation-triangle"></i> 
+                                <strong>QUAN TRỌNG:</strong> Phải nhập tọa độ GPS! 
+                                Click nút "Lấy vị trí hiện tại" hoặc nhập thủ công.
+                            </div>
+
+                            <button type="button" class="btn btn-gradient-info w-100 mb-4" 
+                                    onclick="getCurrentLocation()">
+                                <i class="fas fa-crosshairs"></i> Lấy vị trí hiện tại (Khuyến nghị)
+                            </button>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="SlotLatitude" class="form-label">
+                                        <i class="fas fa-map-pin"></i> Vĩ độ (Latitude) 
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="SlotLatitude" class="form-control glass-input" 
+                                           type="text" placeholder="VD: 21.0285" id="SlotLatitude" required />
+                                    <span asp-validation-for="SlotLatitude" class="text-danger"></span>
+                                    <small class="form-text text-glass-muted">Phải trong khoảng -90 đến 90</small>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="SlotLongitude" class="form-label">
+                                        <i class="fas fa-map-pin"></i> Kinh độ (Longitude) 
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="SlotLongitude" class="form-control glass-input" 
+                                           type="text" placeholder="VD: 105.8542" id="SlotLongitude" required />
+                                    <span asp-validation-for="SlotLongitude" class="text-danger"></span>
+                                    <small class="form-text text-glass-muted">Phải trong khoảng -180 đến 180</small>
+                                </div>
+                            </div>
+
+                            <div id="locationStatus" class="glass-alert-success mb-4" style="display:none;">
+                                <i class="fas fa-check-circle"></i> Đã lấy vị trí: 
+                                <strong id="locationText"></strong>
+                            </div>
+
+                            <div id="debugInfo" class="glass-box mb-4" style="display:none; background: rgba(255,255,255,0.15);">
+                                <h6><i class="fas fa-bug"></i> Debug Info (để kiểm tra)</h6>
+                                <p class="mb-1 text-glass"><strong>Latitude sẽ gửi:</strong> <span id="debugLat">-</span></p>
+                                <p class="mb-0 text-glass"><strong>Longitude sẽ gửi:</strong> <span id="debugLng">-</span></p>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="AllowedDistanceMeters" class="form-label">
+                                    <i class="fas fa-ruler-combined"></i> Khoảng cách cho phép (mét) 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="AllowedDistanceMeters" class="form-control glass-input" 
+                                       type="number" min="10" max="10000" value="100" required />
+                                <span asp-validation-for="AllowedDistanceMeters" class="text-danger"></span>
+                                <div class="form-text text-glass-muted mt-2">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Khuyến nghị:</strong> 50-100m cho lớp nhỏ, 100-200m cho building lớn
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-gradient-success btn-lg" id="submitBtn">
+                                    <i class="fas fa-save"></i> Tạo phiên điểm danh
+                                </button>
+                                <a asp-controller="Class" asp-action="Detail" asp-route-id="@Model.ClassId" 
+                                   class="btn btn-gradient-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </form>
+
+                        <!-- Help Section -->
+                        <div class="glass-card-sm mt-4" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));">
+                            <h6 class="text-white mb-3">
+                                <i class="fas fa-question-circle icon-glow"></i> Hướng dẫn
+                            </h6>
+                            <p class="text-glass mb-2"><strong>Cách lấy tọa độ GPS:</strong></p>
+                            <ol class="text-glass-muted mb-3" style="padding-left: 20px;">
+                                <li>Click nút "Lấy vị trí hiện tại" (cần bật GPS trên trình duyệt)</li>
+                                <li>Hoặc sử dụng Google Maps: Right-click vào vị trí → Copy tọa độ</li>
+                                <li>Hoặc nhập thủ công nếu biết tọa độ</li>
+                            </ol>
+                            <div class="glass-divider"></div>
+                            <p class="text-glass mb-2"><strong>Ví dụ tọa độ:</strong></p>
+                            <ul class="text-glass-muted mb-0" style="padding-left: 20px;">
+                                <li>FPT University Hà Nội: Lat=21.0285, Lng=105.8542</li>
+                                <li>ĐH Bách Khoa HN: Lat=21.0053, Lng=105.8434</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Set default times
+        $(document).ready(function() {
+            var now = new Date();
+            var start = new Date(now.getTime());
+            var end = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // +2 hours
+
+            function formatDateTime(date) {
+                var year = date.getFullYear();
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var day = String(date.getDate()).padStart(2, '0');
+                var hours = String(date.getHours()).padStart(2, '0');
+                var minutes = String(date.getMinutes()).padStart(2, '0');
+                return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+            }
+
+            if (!$('#StartTime').val()) {
+                $('#StartTime').val(formatDateTime(start));
+            }
+            if (!$('#EndTime').val()) {
+                $('#EndTime').val(formatDateTime(end));
+            }
+
+            // Monitor input changes for debug
+            $('#SlotLatitude, #SlotLongitude').on('input change', function() {
+                updateDebugInfo();
+            });
+
+            // Validation khi submit
+            $('#createSlotForm').submit(function(e) {
+                var latStr = $('#SlotLatitude').val().trim();
+                var lngStr = $('#SlotLongitude').val().trim();
+                
+                // Remove validation error styling
+                $('#SlotLatitude, #SlotLongitude').removeClass('is-invalid');
+                
+                var lat = parseFloat(latStr);
+                var lng = parseFloat(lngStr);
+
+                console.log('=== SUBMIT CREATE SLOT ===');
+                console.log('SlotLatitude (string):', latStr);
+                console.log('SlotLatitude (number):', lat, 'Type:', typeof lat);
+                console.log('SlotLongitude (string):', lngStr);
+                console.log('SlotLongitude (number):', lng, 'Type:', typeof lng);
+
+                if (!latStr || !lngStr || isNaN(lat) || isNaN(lng)) {
+                    e.preventDefault();
+                    $('#SlotLatitude, #SlotLongitude').css('border-color', '#f5576c');
+                    alert('❌ Vui lòng nhập tọa độ GPS!\n\nClick nút "Lấy vị trí hiện tại" hoặc nhập thủ công.');
+                    $('#SlotLatitude').focus();
+                    return false;
+                }
+
+                if (Math.abs(lat) > 90) {
+                    e.preventDefault();
+                    $('#SlotLatitude').css('border-color', '#f5576c');
+                    alert('⚠️ Vĩ độ (Latitude) không hợp lệ!\nPhải trong khoảng -90 đến 90.\nBạn đã nhập: ' + lat);
+                    $('#SlotLatitude').focus();
+                    return false;
+                }
+
+                if (Math.abs(lng) > 180) {
+                    e.preventDefault();
+                    $('#SlotLongitude').css('border-color', '#f5576c');
+                    alert('⚠️ Kinh độ (Longitude) không hợp lệ!\nPhải trong khoảng -180 đến 180.\nBạn đã nhập: ' + lng);
+                    $('#SlotLongitude').focus();
+                    return false;
+                }
+
+                // Final check before submit
+                console.log('✅ Tọa độ hợp lệ');
+                console.log('Form data sẽ gửi:');
+                console.log('- ClassId:', $('#ClassId').val());
+                console.log('- SlotName:', $('#SlotName').val());
+                console.log('- SlotLatitude:', lat);
+                console.log('- SlotLongitude:', lng);
+                console.log('- AllowedDistanceMeters:', $('#AllowedDistanceMeters').val());
+
+                $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang tạo...');
+                
+                return true;
+            });
+        });
+
+        function updateDebugInfo() {
+            var lat = $('#SlotLatitude').val();
+            var lng = $('#SlotLongitude').val();
+            
+            if (lat && lng) {
+                $('#debugLat').text(lat);
+                $('#debugLng').text(lng);
+                $('#debugInfo').slideDown();
+            } else {
+                $('#debugInfo').slideUp();
+            }
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                console.log('📍 Đang lấy vị trí GPS...');
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+                        var accuracy = position.coords.accuracy;
+
+                        console.log('✅ Lấy vị trí thành công:');
+                        console.log('Lat:', lat);
+                        console.log('Lng:', lng);
+                        console.log('Accuracy: ±' + accuracy + 'm');
+
+                        // Set giá trị dạng string để tránh lỗi
+                        $('#SlotLatitude').val(lat.toString()).css('border-color', '');
+                        $('#SlotLongitude').val(lng.toString()).css('border-color', '');
+                        
+                        updateDebugInfo();
+
+                        $('#locationStatus').slideDown();
+                        $('#locationText').text('Lat=' + lat.toFixed(6) + ', Lng=' + lng.toFixed(6) + ' (±' + accuracy.toFixed(0) + 'm)');
+
+                        alert('✅ Đã lấy vị trí thành công!\n\n' +
+                              'Vĩ độ: ' + lat + '\n' +
+                              'Kinh độ: ' + lng + '\n' +
+                              'Độ chính xác: ±' + accuracy.toFixed(0) + ' mét\n\n' +
+                              'Giá trị đã được điền vào form. Bạn có thể submit ngay!');
+                    },
+                    function(error) {
+                        console.error('❌ Lỗi GPS:', error);
+                        
+                        var errorMsg = '';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg = 'Bạn đã từ chối quyền truy cập vị trí.\nVui lòng bật định vị trong trình duyệt.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg = 'Không thể xác định vị trí.\nVui lòng kiểm tra GPS/WiFi.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg = 'Hết thời gian chờ.\nVui lòng thử lại.';
+                                break;
+                            default:
+                                errorMsg = 'Có lỗi xảy ra khi lấy vị trí.';
+                        }
+                        
+                        alert('❌ ' + errorMsg + '\n\nBạn có thể nhập tọa độ thủ công:\nVD: Lat=21.0285, Lng=105.8542');
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                alert('❌ Trình duyệt không hỗ trợ định vị.\n\nVui lòng nhập tọa độ thủ công.');
+            }
+        }
+    </script>
+}

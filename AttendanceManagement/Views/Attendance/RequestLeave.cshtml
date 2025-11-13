@@ -1,0 +1,108 @@
+﻿@model AttendanceManagement.ViewModels.RequestLeaveViewModel
+@{
+    ViewData["Title"] = "Xin nghỉ phép";
+}
+
+<div class="glass-bg-orange">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-file-medical icon-glow"></i> Xin nghỉ phép
+                        </h4>
+                    </div>
+                    <div class="glass-body">
+                        <div class="glass-alert-info mb-4">
+                            <div class="mb-2"><strong>Lớp học:</strong> @ViewBag.ClassName</div>
+                            <div><strong>Phiên:</strong> @ViewBag.SlotName</div>
+                        </div>
+
+                        <form asp-action="RequestLeave" method="post" enctype="multipart/form-data">
+                            <input type="hidden" asp-for="SlotId" />
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-4">
+                                <label asp-for="StudentName" class="form-label">
+                                    <i class="fas fa-user"></i> Họ và tên
+                                </label>
+                                <input asp-for="StudentName" class="form-control glass-input" readonly />
+                                <span asp-validation-for="StudentName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="StudentCode" class="form-label">
+                                    <i class="fas fa-id-card"></i> Mã sinh viên
+                                </label>
+                                <input asp-for="StudentCode" class="form-control glass-input" readonly />
+                                <span asp-validation-for="StudentCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email
+                                </label>
+                                <input asp-for="Email" class="form-control glass-input" readonly />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="PhoneNumber" class="form-label">
+                                    <i class="fas fa-phone"></i> Số điện thoại
+                                </label>
+                                <input asp-for="PhoneNumber" class="form-control glass-input" placeholder="0123456789" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Reason" class="form-label">
+                                    <i class="fas fa-comment-medical"></i> Lý do xin nghỉ
+                                </label>
+                                <textarea asp-for="Reason" class="form-control glass-input" rows="4" 
+                                          placeholder="Nhập lý do xin nghỉ của bạn... (Ví dụ: Bị ốm, có việc gia đình, ...)"></textarea>
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Evidence" class="form-label">
+                                    <i class="fas fa-file-upload"></i> Minh chứng (tùy chọn)
+                                </label>
+                                <input asp-for="Evidence" class="form-control glass-input" type="file" 
+                                       style="padding: 12px;" />
+                                <div class="form-text text-glass-muted mt-2">
+                                    <i class="fas fa-info-circle"></i> Tải lên minh chứng (đơn xin nghỉ, giấy khám bệnh, ...)
+                                </div>
+                                <span asp-validation-for="Evidence" class="text-danger"></span>
+                            </div>
+
+                            <div class="glass-divider"></div>
+
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-gradient-primary btn-lg">
+                                    <i class="fas fa-paper-plane"></i> Gửi đơn xin nghỉ
+                                </button>
+                                <a asp-action="SlotDetail" asp-route-id="@Model.SlotId" class="btn btn-gradient-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="glass-alert-warning mt-4">
+                            <strong><i class="fas fa-exclamation-triangle"></i> Lưu ý:</strong>
+                            <ul class="mb-0 mt-2" style="padding-left: 20px;">
+                                <li>Đơn xin nghỉ cần được gửi trước hoặc trong thời gian phiên học</li>
+                                <li>Giáo viên sẽ xem xét và phê duyệt đơn của bạn</li>
+                                <li>Nếu có minh chứng, vui lòng đính kèm để tăng tỷ lệ được duyệt</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

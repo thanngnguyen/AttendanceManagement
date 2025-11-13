@@ -1,0 +1,63 @@
+# Markdown files at root level
+/*.md
+
+# Batch and shell scripts
+*.bat
+*.sh
+
+# SQL debug/fix scripts (temporary)
+fix-*.sql
+check-*.sql
+debug-*.sql
+
+# Visual Studio
+.vs/
+.vscode/
+
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Mono auto generated files
+mono_crash.*
+
+# Build results
+[Dd]ebugPublic/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options directory
+.vs/
+
+# Uploads folder
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep

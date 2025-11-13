@@ -1,0 +1,119 @@
+﻿@model AttendanceManagement.ViewModels.CreateSubmissionViewModel
+@{
+    ViewData["Title"] = "Nộp bài tập";
+}
+
+<div class="glass-bg-green">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-file-upload icon-glow"></i> Nộp bài tập
+                        </h4>
+                    </div>
+                    <div class="glass-body">
+                        <div class="glass-box mb-3">
+                            <strong>Lớp học:</strong> @ViewBag.ClassName
+                        </div>
+                        <div class="glass-box mb-3">
+                            <strong>Bài tập:</strong> @ViewBag.AssignmentTitle
+                        </div>
+                        @if (ViewBag.DueDate != null)
+                        {
+                            <div class="glass-alert-warning mb-4">
+                                <i class="fas fa-clock"></i> <strong>Hạn nộp:</strong> @ViewBag.DueDate.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        }
+
+                        <form asp-action="Submit" method="post" enctype="multipart/form-data">
+                            <input type="hidden" asp-for="AssignmentId" />
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-4">
+                                <label asp-for="SubmissionText" class="form-label">
+                                    <i class="fas fa-edit"></i> Nội dung bài làm
+                                </label>
+                                <textarea asp-for="SubmissionText" class="form-control glass-input" rows="8" 
+                                          placeholder="Nhập nội dung bài làm của bạn...&#10;&#10;Hoặc mô tả ngắn gọn về file đính kèm..."></textarea>
+                                <span asp-validation-for="SubmissionText" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Attachment" class="form-label">
+                                    <i class="fas fa-paperclip"></i> File đính kèm (tùy chọn)
+                                </label>
+                                <input asp-for="Attachment" class="form-control glass-input" type="file" 
+                                       style="padding: 12px;" />
+                                <div class="form-text text-glass-muted mt-2">
+                                    <i class="fas fa-info-circle"></i> Đính kèm file bài làm (Word, PDF, ZIP, ...)
+                                </div>
+                                <span asp-validation-for="Attachment" class="text-danger"></span>
+                            </div>
+
+                            <div class="glass-alert-info mb-4">
+                                <i class="fas fa-lightbulb"></i> 
+                                <strong>Lưu ý:</strong> Bạn có thể nhập nội dung trực tiếp, đính kèm file, hoặc cả hai
+                            </div>
+
+                            <div class="glass-divider"></div>
+
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-gradient-primary btn-lg">
+                                    <i class="fas fa-paper-plane"></i> Nộp bài ngay
+                                </button>
+                                <a asp-action="Detail" asp-route-id="@Model.AssignmentId" class="btn btn-gradient-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="glass-alert-warning mt-4">
+                            <strong><i class="fas fa-exclamation-triangle"></i> Quan trọng:</strong>
+                            <ul class="mb-0 mt-2" style="padding-left: 20px;">
+                                <li>Kiểm tra kỹ bài làm trước khi nộp</li>
+                                <li>Đảm bảo file đính kèm không lỗi và mở được</li>
+                                <li>Nộp bài trước deadline để tránh nộp muộn</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // File size validation
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    alert('⚠️ File quá lớn! Kích thước tối đa: 10MB\nFile hiện tại: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB');
+                    e.target.value = '';
+                }
+            }
+        });
+
+        // Confirm before submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const text = document.querySelector('textarea[name="SubmissionText"]').value;
+            const file = document.querySelector('input[type="file"]').files[0];
+            
+            if (!text && !file) {
+                e.preventDefault();
+                alert('⚠️ Vui lòng nhập nội dung hoặc đính kèm file!');
+                return false;
+            }
+            
+            if (!confirm('✅ Bạn có chắc muốn nộp bài?\n\nSau khi nộp, bạn có thể không thể sửa lại.')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+}

@@ -1,0 +1,198 @@
+﻿@model AttendanceManagement.ViewModels.ClassMembersViewModel
+@{
+    ViewData["Title"] = "Danh sách thành viên";
+}
+
+<div class="glass-bg-pink">
+    <div class="container-fluid">
+        <!-- Breadcrumb -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="glass-box" style="padding: 12px 20px;">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0" style="background: transparent;">
+                            <li class="breadcrumb-item">
+                                <a asp-action="Index" class="glass-link">Lớp học</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a asp-action="Detail" asp-route-id="@Model.Class.ClassId" class="glass-link">@Model.Class.ClassName</a>
+                            </li>
+                            <li class="breadcrumb-item active text-white">Thành viên</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <!-- Teacher Card -->
+                <div class="glass-card mb-4">
+                    <div class="glass-header">
+                        <h4 class="mb-0"><i class="fas fa-user-tie icon-glow"></i> Giáo viên</h4>
+                    </div>
+                    <div class="glass-body">
+                        <div class="d-flex align-items-center">
+                            <div class="me-4">
+                                <div class="d-flex align-items-center justify-content-center" 
+                                     style="width: 70px; height: 70px; background: linear-gradient(135deg, rgba(240, 147, 251, 0.3), rgba(245, 87, 108, 0.3)); 
+                                            border-radius: 50%; border: 3px solid rgba(255,255,255,0.3);">
+                                    <i class="fas fa-user fa-3x icon-glow"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="text-white mb-2">@Model.Teacher.FullName</h5>
+                                <p class="text-glass mb-1"><i class="fas fa-envelope"></i> @Model.Teacher.Email</p>
+                                @if (!string.IsNullOrEmpty(Model.Teacher.PhoneNumber))
+                                {
+                                    <p class="text-glass mb-0"><i class="fas fa-phone"></i> @Model.Teacher.PhoneNumber</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Card -->
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <h4 class="mb-0">
+                                <i class="fas fa-users icon-glow"></i> Sinh viên (@Model.Students.Count)
+                            </h4>
+                            <button class="btn btn-gradient-success" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel"></i> Xuất Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="glass-body">
+                        @if (Model.Students.Count == 0)
+                        {
+                            <div class="glass-alert-info text-center" style="padding: 60px 40px;">
+                                <i class="fas fa-user-plus fa-5x icon-glow mb-4" style="color: rgba(255,255,255,0.5);"></i>
+                                <h5 class="text-white mb-3">Chưa có sinh viên nào</h5>
+                                <p class="text-glass mb-0">Chia sẻ mã lớp với sinh viên để họ tham gia!</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table glass-table" id="studentsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Mã SV</th>
+                                            <th>Họ và tên</th>
+                                            <th>Email</th>
+                                            <th>Ngày tham gia</th>
+                                            <th>Số buổi điểm danh</th>
+                                            <th>Tỷ lệ điểm danh</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var student in Model.Students.OrderBy(s => s.StudentId))
+                                        {
+                                            <tr>
+                                                <td>@(Model.Students.IndexOf(student) + 1)</td>
+                                                <td><strong>@student.StudentId</strong></td>
+                                                <td>@student.FullName</td>
+                                                <td>@student.Email</td>
+                                                <td>@student.EnrolledAt.ToString("dd/MM/yyyy")</td>
+                                                <td>
+                                                    <span class="badge-glass" style="background: rgba(79, 172, 254, 0.3);">
+                                                        @student.AttendanceCount / @student.TotalSlots
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    @{
+                                                        var rate = student.AttendanceRate;
+                                                        var badgeColor = rate >= 80 ? "rgba(67, 233, 123, 0.4)" : rate >= 50 ? "rgba(251, 191, 36, 0.4)" : "rgba(239, 68, 68, 0.4)";
+                                                    }
+                                                    <span class="badge-glass" style="background: @badgeColor; font-size: 1rem; padding: 6px 14px;">
+                                                        @rate.ToString("F1")%
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="mailto:@student.Email" class="btn btn-gradient-info btn-sm" title="Gửi email">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Statistics -->
+                            <div class="row mt-4 g-3">
+                                <div class="col-md-4">
+                                    <div class="glass-card-sm text-center">
+                                        <i class="fas fa-users fa-3x icon-glow mb-3" style="color: #4facfe;"></i>
+                                        <h2 class="text-white mb-1">@Model.Students.Count</h2>
+                                        <p class="text-glass-muted mb-0">Tổng sinh viên</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="glass-card-sm text-center">
+                                        <i class="fas fa-check-circle fa-3x icon-glow mb-3" style="color: #43e97b;"></i>
+                                        <h2 class="text-white mb-1">@Model.Students.Count(s => s.AttendanceRate >= 80)</h2>
+                                        <p class="text-glass-muted mb-0">Điểm danh tốt (≥80%)</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="glass-card-sm text-center">
+                                        <i class="fas fa-exclamation-triangle fa-3x icon-glow mb-3" style="color: #f5576c;"></i>
+                                        <h2 class="text-white mb-1">@Model.Students.Count(s => s.AttendanceRate < 50)</h2>
+                                        <p class="text-glass-muted mb-0">Cần cải thiện (&lt;50%)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportToExcel() {
+            var table = document.getElementById('studentsTable');
+            if (!table) {
+                alert('Không có dữ liệu để xuất!');
+                return;
+            }
+            
+            var csv = [];
+            
+            // Headers
+            var headers = [];
+            table.querySelectorAll('thead th').forEach(function(th) {
+                headers.push(th.textContent.trim());
+            });
+            csv.push(headers.join(','));
+            
+            // Rows
+            table.querySelectorAll('tbody tr').forEach(function(tr) {
+                var row = [];
+                tr.querySelectorAll('td').forEach(function(td, index) {
+                    if (index < headers.length - 1) { // Skip last column (Actions)
+                        row.push('"' + td.textContent.trim().replace(/"/g, '""') + '"');
+                    }
+                });
+                csv.push(row.join(','));
+            });
+            
+            // Download
+            var csvContent = '\uFEFF' + csv.join('\n'); // UTF-8 BOM
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'danh-sach-sinh-vien-@Model.Class.ClassName.Replace(" ", "-")-' + new Date().toISOString().slice(0,10) + '.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+}

@@ -1,0 +1,299 @@
+﻿@model AttendanceManagement.ViewModels.AssignmentDetailViewModel
+@{
+    ViewData["Title"] = Model.Assignment.Title;
+}
+
+<div class="glass-bg-blue">
+    <div class="container-fluid">
+        <!-- Breadcrumb -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="glass-box" style="padding: 12px 20px;">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0" style="background: transparent;">
+                            <li class="breadcrumb-item">
+                                <a asp-controller="Class" asp-action="Index" class="glass-link">Lớp học</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a asp-controller="Class" asp-action="Detail" asp-route-id="@Model.Class.ClassId" class="glass-link">@Model.Class.ClassName</a>
+                            </li>
+                            <li class="breadcrumb-item active text-white">@Model.Assignment.Title</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="glass-card mb-4">
+                    <div class="glass-header">
+                        <h4 class="mb-0"><i class="fas fa-tasks icon-glow"></i> @Model.Assignment.Title</h4>
+                    </div>
+                    <div class="glass-body">
+                        <div class="glass-box mb-3">
+                            <i class="fas fa-chalkboard"></i> <strong>Lớp học:</strong> @Model.Class.ClassName
+                        </div>
+
+                        @if (Model.Assignment.DueDate.HasValue)
+                        {
+                            var isOverdue = DateTime.Now > Model.Assignment.DueDate.Value;
+                            <div class="glass-box mb-3">
+                                <i class="fas fa-clock"></i> <strong>Hạn nộp:</strong>
+                                <span class="@(isOverdue ? "text-danger" : "text-white")">
+                                    @Model.Assignment.DueDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                                @if (isOverdue)
+                                {
+                                    <span class="badge-glass ms-2" style="background: rgba(239, 68, 68, 0.4);">Đã quá hạn</span>
+                                }
+                            </div>
+                        }
+
+                        <div class="glass-box mb-3">
+                            <i class="fas fa-star"></i> <strong>Điểm tối đa:</strong> @Model.Assignment.MaxScore
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Assignment.Description))
+                        {
+                            <div class="glass-divider"></div>
+                            <h5 class="section-title"><i class="fas fa-info-circle"></i> Mô tả bài tập</h5>
+                            <div class="glass-box">
+                                @Model.Assignment.Description
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Assignment.AttachmentUrl))
+                        {
+                            <div class="mt-3">
+                                <a href="@Model.Assignment.AttachmentUrl" target="_blank" class="btn btn-gradient-info">
+                                    <i class="fas fa-download"></i> Tải tài liệu hướng dẫn
+                                </a>
+                            </div>
+                        }
+
+                        @if (!Model.IsTeacher)
+                        {
+                            <div class="glass-divider"></div>
+                            @if (Model.HasSubmitted)
+                            {
+                                <div class="glass-alert-success">
+                                    <h5><i class="fas fa-check-circle"></i> Bạn đã nộp bài</h5>
+                                    @if (Model.MySubmission != null)
+                                    {
+                                        <div class="glass-box mt-3 mb-2">
+                                            <strong>Thời gian nộp:</strong> @Model.MySubmission.SubmittedAt.ToString("dd/MM/yyyy HH:mm")
+                                        </div>
+                                        
+                                        @if (Model.MySubmission.Score.HasValue)
+                                        {
+                                            <div class="glass-box mb-3">
+                                                <strong>Điểm:</strong> 
+                                                <span class="badge-glass" style="background: rgba(67, 233, 123, 0.4); font-size: 1.2rem; padding: 8px 16px;">
+                                                    @Model.MySubmission.Score / @Model.Assignment.MaxScore
+                                                </span>
+                                            </div>
+                                            
+                                            @if (!string.IsNullOrEmpty(Model.MySubmission.Feedback))
+                                            {
+                                                <div class="glass-box">
+                                                    <strong>Nhận xét:</strong>
+                                                    <p class="text-glass mt-2 mb-0">@Model.MySubmission.Feedback</p>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="text-glass-muted">Chưa được chấm điểm</p>
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                @if (Model.Assignment.DueDate.HasValue && DateTime.Now > Model.Assignment.DueDate.Value && !Model.Assignment.AllowLateSubmission)
+                                {
+                                    <div class="glass-alert-danger">
+                                        <i class="fas fa-exclamation-triangle"></i> Đã hết hạn nộp bài và không cho phép nộp muộn
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-action="Submit" asp-route-id="@Model.Assignment.AssignmentId" class="btn btn-gradient-primary btn-lg w-100">
+                                        <i class="fas fa-paper-plane"></i> Nộp bài ngay
+                                    </a>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="glass-card mb-4">
+                    <div class="glass-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar icon-glow"></i> Thống kê</h5>
+                    </div>
+                    <div class="glass-body">
+                        <div class="glass-box mb-2 d-flex justify-content-between">
+                            <span>Tổng sinh viên</span>
+                            <span class="badge-glass" style="background: rgba(102, 126, 234, 0.3);">@Model.Statistics.TotalStudents</span>
+                        </div>
+                        <div class="glass-box mb-2 d-flex justify-content-between">
+                            <span>Đã nộp</span>
+                            <span class="badge-glass" style="background: rgba(67, 233, 123, 0.3);">@Model.Statistics.SubmittedCount</span>
+                        </div>
+                        <div class="glass-box mb-2 d-flex justify-content-between">
+                            <span>Đã chấm</span>
+                            <span class="badge-glass" style="background: rgba(79, 172, 254, 0.3);">@Model.Statistics.GradedCount</span>
+                        </div>
+                        <div class="glass-box mb-3 d-flex justify-content-between">
+                            <span>Nộp muộn</span>
+                            <span class="badge-glass" style="background: rgba(251, 191, 36, 0.3);">@Model.Statistics.LateSubmissionCount</span>
+                        </div>
+
+                        <div class="glass-divider"></div>
+
+                        <div class="text-center glass-box">
+                            <h3 class="text-white mb-1">@Model.Statistics.SubmissionRate.ToString("F1")%</h3>
+                            <small class="text-glass-muted">Tỷ lệ nộp bài</small>
+                        </div>
+
+                        @if (Model.Statistics.GradedCount > 0)
+                        {
+                            <div class="glass-divider"></div>
+                            <div class="text-center glass-box">
+                                <h3 class="text-white mb-1">@Model.Statistics.AverageScore.ToString("F1")</h3>
+                                <small class="text-glass-muted">Điểm trung bình</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.IsTeacher && Model.Submissions.Count > 0)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="glass-card">
+                        <div class="glass-header">
+                            <h5 class="mb-0"><i class="fas fa-list icon-glow"></i> Danh sách bài nộp (@Model.Submissions.Count)</h5>
+                        </div>
+                        <div class="glass-body">
+                            <div class="table-responsive">
+                                <table class="table glass-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Mã SV</th>
+                                            <th>Họ tên</th>
+                                            <th>Thời gian nộp</th>
+                                            <th>Trạng thái</th>
+                                            <th>Điểm</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var submission in Model.Submissions)
+                                        {
+                                            <tr style="@(submission.IsLate ? "background: rgba(251, 191, 36, 0.1);" : "")">
+                                                <td>@(Model.Submissions.IndexOf(submission) + 1)</td>
+                                                <td><strong>@submission.StudentCode</strong></td>
+                                                <td>@submission.StudentName</td>
+                                                <td>@submission.SubmittedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>
+                                                    @if (submission.IsLate)
+                                                    {
+                                                        <span class="badge-glass" style="background: rgba(251, 191, 36, 0.4);">Nộp muộn</span>
+                                                    }
+                                                    else if (submission.Score.HasValue)
+                                                    {
+                                                        <span class="badge-glass" style="background: rgba(67, 233, 123, 0.4);">Đã chấm</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge-glass" style="background: rgba(156, 163, 175, 0.3);">Chưa chấm</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (submission.Score.HasValue)
+                                                    {
+                                                        <strong class="text-white">@submission.Score / @Model.Assignment.MaxScore</strong>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-glass-muted">-</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-gradient-info btn-sm" 
+                                                            onclick="gradeSubmission(@submission.SubmissionId, '@submission.StudentName', @(submission.Score?.ToString() ?? "null"))">
+                                                        <i class="fas fa-edit"></i> Chấm
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal chấm điểm -->
+            <div class="modal fade" id="gradeModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);">
+                        <div class="modal-header" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                            <h5 class="modal-title text-white">Chấm điểm</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form asp-action="Grade" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" name="SubmissionId" id="gradeSubmissionId" />
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Sinh viên</label>
+                                    <input type="text" class="form-control" id="gradeStudentName" readonly />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Điểm</label>
+                                    <input type="number" step="0.01" class="form-control" name="Score" id="gradeScore" 
+                                           min="0" max="@Model.Assignment.MaxScore" required />
+                                    <div class="form-text">Điểm tối đa: @Model.Assignment.MaxScore</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nhận xét</label>
+                                    <textarea class="form-control" name="Feedback" rows="4" 
+                                              placeholder="Nhận xét về bài làm..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Lưu điểm
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function gradeSubmission(submissionId, studentName, currentScore) {
+            $('#gradeSubmissionId').val(submissionId);
+            $('#gradeStudentName').val(studentName);
+            $('#gradeScore').val(currentScore || '');
+            
+            new bootstrap.Modal(document.getElementById('gradeModal')).show();
+        }
+    </script>
+}

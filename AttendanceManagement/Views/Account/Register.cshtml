@@ -1,0 +1,119 @@
+﻿@model AttendanceManagement.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="glass-bg-green">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="glass-card">
+                    <div class="glass-header text-center">
+                        <h2 class="mb-0">
+                            <i class="fas fa-user-plus icon-glow"></i> Đăng ký tài khoản
+                        </h2>
+                    </div>
+
+                    <div class="glass-body">
+                        <form asp-action="Register" method="post">
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                            <div class="mb-4">
+                                <label asp-for="FullName" class="form-label">
+                                    <i class="fas fa-user"></i> Họ và tên
+                                </label>
+                                <input asp-for="FullName" class="form-control glass-input" placeholder="Nguyễn Văn A" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email
+                                </label>
+                                <input asp-for="Email" class="form-control glass-input" placeholder="email@example.com" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Role" class="form-label">
+                                    <i class="fas fa-user-tag"></i> Vai trò
+                                </label>
+                                <select asp-for="Role" class="form-select glass-input" id="roleSelect">
+                                    <option value="Student">Sinh viên</option>
+                                    <option value="Teacher">Giáo viên</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4" id="studentIdDiv">
+                                <label asp-for="StudentId" class="form-label">
+                                    <i class="fas fa-id-card"></i> Mã sinh viên
+                                </label>
+                                <input asp-for="StudentId" class="form-control glass-input" placeholder="SV001234" />
+                                <span asp-validation-for="StudentId" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="PhoneNumber" class="form-label">
+                                    <i class="fas fa-phone"></i> Số điện thoại
+                                </label>
+                                <input asp-for="PhoneNumber" class="form-control glass-input" placeholder="0123456789" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Password" class="form-label">
+                                    <i class="fas fa-lock"></i> Mật khẩu
+                                </label>
+                                <input asp-for="Password" type="password" class="form-control glass-input" placeholder="Mật khẩu" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="ConfirmPassword" class="form-label">
+                                    <i class="fas fa-lock"></i> Xác nhận mật khẩu
+                                </label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control glass-input" placeholder="Nhập lại mật khẩu" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-gradient-success btn-lg">
+                                    <i class="fas fa-user-plus"></i> Đăng ký
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="glass-divider"></div>
+
+                        <div class="text-center">
+                            <p class="text-glass mb-0">
+                                Đã có tài khoản? 
+                                <a asp-action="Login" class="glass-link">Đăng nhập</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            function toggleStudentId() {
+                if ($('#roleSelect').val() === 'Teacher') {
+                    $('#studentIdDiv').hide();
+                    $('#StudentId').prop('required', false);
+                } else {
+                    $('#studentIdDiv').show();
+                    $('#StudentId').prop('required', true);
+                }
+            }
+
+            toggleStudentId();
+            $('#roleSelect').change(toggleStudentId);
+        });
+    </script>
+}

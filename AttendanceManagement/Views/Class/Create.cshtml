@@ -1,0 +1,180 @@
+﻿@model AttendanceManagement.ViewModels.CreateClassViewModel
+@{
+    ViewData["Title"] = "Tạo lớp học";
+}
+
+<div class="glass-bg-green">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-plus-circle icon-glow"></i> Tạo lớp học mới
+                        </h4>
+                    </div>
+                    <div class="glass-body">
+                        <form asp-action="Create" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="mb-4">
+                                <label asp-for="ClassName" class="form-label">
+                                    <i class="fas fa-chalkboard"></i> Tên lớp học
+                                </label>
+                                <input asp-for="ClassName" class="form-control glass-input" 
+                                       placeholder="VD: Lập trình Web - Nhóm 3" />
+                                <span asp-validation-for="ClassName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Subject" class="form-label">
+                                    <i class="fas fa-book"></i> Môn học
+                                </label>
+                                <input asp-for="Subject" class="form-control glass-input" 
+                                       placeholder="VD: Công nghệ thông tin" />
+                                <span asp-validation-for="Subject" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Room" class="form-label">
+                                    <i class="fas fa-door-open"></i> Phòng học
+                                </label>
+                                <input asp-for="Room" class="form-control glass-input" 
+                                       placeholder="VD: A101, B203" />
+                                <span asp-validation-for="Room" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Description" class="form-label">
+                                    <i class="fas fa-align-left"></i> Mô tả
+                                </label>
+                                <textarea asp-for="Description" class="form-control glass-input" rows="3" 
+                                          placeholder="Mô tả về lớp học..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="glass-divider"></div>
+
+                            <h5 class="section-title">
+                                <i class="fas fa-map-marker-alt"></i> 
+                                Cài đặt vị trí điểm danh
+                            </h5>
+                            
+                            <div class="glass-alert-info mb-4">
+                                <i class="fas fa-info-circle"></i> Sinh viên cần ở trong phạm vi này để điểm danh hợp lệ
+                            </div>
+
+                            <button type="button" class="btn btn-gradient-info w-100 mb-4" onclick="getCurrentLocation()">
+                                <i class="fas fa-crosshairs"></i> Lấy vị trí hiện tại (Khuyến nghị)
+                            </button>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="ClassLatitude" class="form-label">
+                                        <i class="fas fa-map-pin"></i> Vĩ độ (Latitude)
+                                    </label>
+                                    <input asp-for="ClassLatitude" class="form-control glass-input" 
+                                           step="any" placeholder="VD: 21.0285" id="ClassLatitude" />
+                                    <span asp-validation-for="ClassLatitude" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="ClassLongitude" class="form-label">
+                                        <i class="fas fa-map-pin"></i> Kinh độ (Longitude)
+                                    </label>
+                                    <input asp-for="ClassLongitude" class="form-control glass-input" 
+                                           step="any" placeholder="VD: 105.8542" id="ClassLongitude" />
+                                    <span asp-validation-for="ClassLongitude" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="AllowedDistanceMeters" class="form-label">
+                                    <i class="fas fa-ruler-combined"></i> Khoảng cách cho phép (mét)
+                                </label>
+                                <input asp-for="AllowedDistanceMeters" class="form-control glass-input" 
+                                       type="number" value="100" />
+                                <span asp-validation-for="AllowedDistanceMeters" class="text-danger"></span>
+                                <div class="form-text text-glass-muted mt-2">
+                                    <i class="fas fa-info-circle"></i> Khoảng cách tối đa từ vị trí lớp học
+                                </div>
+                            </div>
+
+                            <div id="locationStatus" class="glass-alert-success mb-4" style="display:none;">
+                                <i class="fas fa-check-circle"></i> <span id="locationText"></span>
+                            </div>
+
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-gradient-primary btn-lg">
+                                    <i class="fas fa-save"></i> Tạo lớp học
+                                </button>
+                                <a asp-action="Index" class="btn btn-gradient-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="glass-alert-warning mt-4">
+                            <strong><i class="fas fa-lightbulb"></i> Mẹo:</strong>
+                            <ul class="mb-0 mt-2" style="padding-left: 20px;">
+                                <li>Sử dụng nút "Lấy vị trí hiện tại" nếu bạn đang ở lớp học</li>
+                                <li>Hoặc copy tọa độ từ Google Maps (Right-click → Copy coordinates)</li>
+                                <li>Khoảng cách khuyến nghị: 50-100m cho lớp nhỏ, 100-200m cho building lớn</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+                        var accuracy = position.coords.accuracy;
+                        
+                        $('#ClassLatitude').val(lat);
+                        $('#ClassLongitude').val(lng);
+                        
+                        $('#locationText').text('Đã lấy vị trí: Lat=' + lat.toFixed(6) + ', Lng=' + lng.toFixed(6) + ' (±' + accuracy.toFixed(0) + 'm)');
+                        $('#locationStatus').slideDown();
+                        
+                        alert('✅ Đã lấy vị trí thành công!\n\n' +
+                              'Vĩ độ: ' + lat + '\n' +
+                              'Kinh độ: ' + lng + '\n' +
+                              'Độ chính xác: ±' + accuracy.toFixed(0) + ' mét');
+                    },
+                    function(error) {
+                        var errorMsg = 'Không thể lấy vị trí.';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg = 'Bạn đã từ chối quyền truy cập vị trí.\nVui lòng bật định vị trong trình duyệt.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg = 'Không thể xác định vị trí.\nVui lòng kiểm tra GPS/WiFi.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg = 'Hết thời gian chờ.\nVui lòng thử lại.';
+                                break;
+                        }
+                        alert('❌ ' + errorMsg);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                alert('❌ Trình duyệt không hỗ trợ định vị.\n\nVui lòng nhập tọa độ thủ công.');
+            }
+        }
+    </script>
+}
