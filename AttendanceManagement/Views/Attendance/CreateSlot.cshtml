@@ -88,7 +88,7 @@
                                         <span class="text-danger">*</span>
                                     </label>
                                     <input asp-for="SlotLatitude" class="form-control glass-input" 
-                                           type="text" placeholder="VD: 21.0285" id="SlotLatitude" required />
+                                           type="number" step="any" placeholder="VD: 21.0285" id="SlotLatitude" required />
                                     <span asp-validation-for="SlotLatitude" class="text-danger"></span>
                                     <small class="form-text text-glass-muted">Phải trong khoảng -90 đến 90</small>
                                 </div>
@@ -99,7 +99,7 @@
                                         <span class="text-danger">*</span>
                                     </label>
                                     <input asp-for="SlotLongitude" class="form-control glass-input" 
-                                           type="text" placeholder="VD: 105.8542" id="SlotLongitude" required />
+                                           type="number" step="any" placeholder="VD: 105.8542" id="SlotLongitude" required />
                                     <span asp-validation-for="SlotLongitude" class="text-danger"></span>
                                     <small class="form-text text-glass-muted">Phải trong khoảng -180 đến 180</small>
                                 </div>
@@ -142,7 +142,7 @@
                         </form>
 
                         <!-- Help Section -->
-                        <div class="glass-card-sm mt-4" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));">
+                        @* <div class="glass-card-sm mt-4" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));">
                             <h6 class="text-white mb-3">
                                 <i class="fas fa-question-circle icon-glow"></i> Hướng dẫn
                             </h6>
@@ -158,7 +158,7 @@
                                 <li>FPT University Hà Nội: Lat=21.0285, Lng=105.8542</li>
                                 <li>ĐH Bách Khoa HN: Lat=21.0053, Lng=105.8434</li>
                             </ul>
-                        </div>
+                        </div> *@
                     </div>
                 </div>
             </div>
@@ -198,25 +198,17 @@
 
             // Validation khi submit
             $('#createSlotForm').submit(function(e) {
-                var latStr = $('#SlotLatitude').val().trim();
-                var lngStr = $('#SlotLongitude').val().trim();
-                
-                // Remove validation error styling
-                $('#SlotLatitude, #SlotLongitude').removeClass('is-invalid');
-                
-                var lat = parseFloat(latStr);
-                var lng = parseFloat(lngStr);
+                var lat = parseFloat($('#SlotLatitude').val());
+                var lng = parseFloat($('#SlotLongitude').val());
 
                 console.log('=== SUBMIT CREATE SLOT ===');
-                console.log('SlotLatitude (string):', latStr);
-                console.log('SlotLatitude (number):', lat, 'Type:', typeof lat);
-                console.log('SlotLongitude (string):', lngStr);
-                console.log('SlotLongitude (number):', lng, 'Type:', typeof lng);
+                console.log('SlotLatitude:', lat, 'Type:', typeof lat);
+                console.log('SlotLongitude:', lng, 'Type:', typeof lng);
 
-                if (!latStr || !lngStr || isNaN(lat) || isNaN(lng)) {
+                if (isNaN(lat) || isNaN(lng)) {
                     e.preventDefault();
                     $('#SlotLatitude, #SlotLongitude').css('border-color', '#f5576c');
-                    alert('❌ Vui lòng nhập tọa độ GPS!\n\nClick nút "Lấy vị trí hiện tại" hoặc nhập thủ công.');
+                    alert('❌ Vui lòng nhập tọa độ GPS hợp lệ!\n\nClick nút "Lấy vị trí hiện tại" hoặc nhập số thập phân.\nVD: 21.0285 hoặc 105.8542');
                     $('#SlotLatitude').focus();
                     return false;
                 }
@@ -240,11 +232,8 @@
                 // Final check before submit
                 console.log('✅ Tọa độ hợp lệ');
                 console.log('Form data sẽ gửi:');
-                console.log('- ClassId:', $('#ClassId').val());
-                console.log('- SlotName:', $('#SlotName').val());
                 console.log('- SlotLatitude:', lat);
                 console.log('- SlotLongitude:', lng);
-                console.log('- AllowedDistanceMeters:', $('#AllowedDistanceMeters').val());
 
                 $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang tạo...');
                 
@@ -280,9 +269,9 @@
                         console.log('Lng:', lng);
                         console.log('Accuracy: ±' + accuracy + 'm');
 
-                        // Set giá trị dạng string để tránh lỗi
-                        $('#SlotLatitude').val(lat.toString()).css('border-color', '');
-                        $('#SlotLongitude').val(lng.toString()).css('border-color', '');
+                        // Set giá trị số thập phân
+                        $('#SlotLatitude').val(lat).css('border-color', '');
+                        $('#SlotLongitude').val(lng).css('border-color', '');
                         
                         updateDebugInfo();
 

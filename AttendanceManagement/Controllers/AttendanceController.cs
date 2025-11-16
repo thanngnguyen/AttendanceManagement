@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -89,7 +89,7 @@ namespace AttendanceManagement.Controllers
                 // Validate latitude/longitude range
                 if (Math.Abs(model.SlotLatitude) > 90 || Math.Abs(model.SlotLongitude) > 180)
                 {
-                    ModelState.AddModelError("", $"T?a ?? kh�ng h?p l?! Latitude ph?i trong kho?ng [-90, 90], Longitude trong kho?ng [-180, 180]. B?n ?� nh?p: Lat={model.SlotLatitude}, Lng={model.SlotLongitude}");
+                    ModelState.AddModelError("", $"Tọa độ không hợp lệ! Latitude phải trong khoảng [-90, 90], Longitude trong khoảng [-180, 180]. Bạn đã nhập: Lat={model.SlotLatitude}, Lng={model.SlotLongitude}");
                     ViewBag.ClassName = classEntity.ClassName;
                     return View(model);
                 }
@@ -131,7 +131,7 @@ namespace AttendanceManagement.Controllers
                     Console.WriteLine($"   Saved Longitude: {savedSlot.SlotLongitude}");
                 }
 
-                TempData["SuccessMessage"] = $"T?o phi�n ?i?m danh th�nh c�ng! (Lat={model.SlotLatitude:F6}, Lng={model.SlotLongitude:F6})";
+                TempData["SuccessMessage"] = $"Tạo phiên điểm danh thành công! (Lat={model.SlotLatitude:F6}, Lng={model.SlotLongitude:F6})";
                 return RedirectToAction("Detail", "Class", new { id = model.ClassId });
             }
 
@@ -284,7 +284,7 @@ namespace AttendanceManagement.Controllers
 
             if (!isEnrolled)
             {
-                TempData["ErrorMessage"] = "B?n ch?a tham gia l?p h?c n�y!";
+                TempData["ErrorMessage"] = "Bạn chưa tham gia lớp học này!";
                 return RedirectToAction(nameof(SlotDetail), new { id });
             }
 
@@ -294,20 +294,20 @@ namespace AttendanceManagement.Controllers
 
             if (hasCheckedIn)
             {
-                TempData["ErrorMessage"] = "B?n ?� ?i?m danh r?i!";
+                TempData["ErrorMessage"] = "Bạn đã điểm danh rồi!";
                 return RedirectToAction(nameof(SlotDetail), new { id });
             }
 
             // Check if slot is active
             if (DateTime.Now < slot.StartTime)
             {
-                TempData["ErrorMessage"] = "Phi�n ?i?m danh ch?a b?t ??u!";
+                TempData["ErrorMessage"] = "Phiên điểm danh chưa bắt đầu!";
                 return RedirectToAction(nameof(SlotDetail), new { id });
             }
 
             if (DateTime.Now > slot.EndTime)
             {
-                TempData["ErrorMessage"] = "Phi�n ?i?m danh ?� k?t th�c!";
+                TempData["ErrorMessage"] = "Phiên điểm danh đã kết thúc!";
                 return RedirectToAction(nameof(SlotDetail), new { id });
             }
 
@@ -323,7 +323,7 @@ namespace AttendanceManagement.Controllers
             var testMode = _configuration.GetValue<bool>("AppSettings:TestMode", false);
             var allowedDistance = slot.AllowedDistanceMeters;
             
-            // N?u test mode, t?ng kho?ng c�ch cho ph�p
+            // Nếu test mode, t?ng khoảng cách cho phép
             if (testMode)
             {
                 allowedDistance = _configuration.GetValue<int>("AppSettings:TestModeDistanceMeters", 5000);
@@ -365,7 +365,7 @@ namespace AttendanceManagement.Controllers
 
                 if (hasCheckedIn)
                 {
-                    return Json(new { success = false, message = "B?n ?� ?i?m danh r?i!" });
+                    return Json(new { success = false, message = "Bạn đã điểm danh rồi!" });
                 }
 
                 // Calculate distance from class location
@@ -373,21 +373,21 @@ namespace AttendanceManagement.Controllers
                 bool isFlagged = false;
                 string? flagReason = null;
 
-                // Log th�ng tin ?? debug
+                // Log thông tin ?? debug
                 Console.WriteLine($"=== CHECK-IN DEBUG INFO ===");
                 Console.WriteLine($"Slot ID: {slot.SlotId}");
                 Console.WriteLine($"Slot Location: Lat={slot.SlotLatitude}, Lng={slot.SlotLongitude}");
                 Console.WriteLine($"User Location: Lat={model.Latitude}, Lng={model.Longitude}");
                 Console.WriteLine($"Allowed Distance: {slot.AllowedDistanceMeters}m");
 
-                // Ki?m tra slot c� t?a ?? h?p l? kh�ng
+                // Kiểm tra slot có tọa độ hợp lệ không
                 bool hasValidSlotLocation = slot.SlotLatitude.HasValue && slot.SlotLongitude.HasValue 
                     && slot.SlotLatitude.Value != 0 && slot.SlotLongitude.Value != 0
                     && Math.Abs(slot.SlotLatitude.Value) <= 90 && Math.Abs(slot.SlotLongitude.Value) <= 180;
 
                 if (hasValidSlotLocation)
                 {
-                    // Ki?m tra user c� t?a ?? h?p l? kh�ng
+                    // Kiểm tra user có tọa độ hợp lệ không
                     bool hasValidUserLocation = model.Latitude != 0 && model.Longitude != 0
                         && Math.Abs(model.Latitude) <= 90 && Math.Abs(model.Longitude) <= 180;
 
@@ -400,7 +400,7 @@ namespace AttendanceManagement.Controllers
 
                         Console.WriteLine($"Calculated Distance: {distance:F2}m");
 
-                        // Ki?m tra TestMode
+                        // Kiểm tra TestMode
                         var testMode = _configuration.GetValue<bool>("AppSettings:TestMode", false);
                         var effectiveAllowedDistance = slot.AllowedDistanceMeters;
                         
@@ -413,27 +413,27 @@ namespace AttendanceManagement.Controllers
                         if (distance > effectiveAllowedDistance)
                         {
                             isFlagged = true;
-                            flagReason = $"Ngo�i ph?m vi cho ph�p: {distance:F2}m (cho ph�p: {effectiveAllowedDistance}m)";
+                            flagReason = $"Ngoài phạm vi cho phép: {distance:F2}m (cho phép: {effectiveAllowedDistance}m)";
                             Console.WriteLine($"? FLAGGED: {flagReason}");
                         }
                         else
                         {
-                            Console.WriteLine($"? OK: Trong ph?m vi ({distance:F2}m <= {effectiveAllowedDistance}m)");
+                            Console.WriteLine($"? OK: Trong phạm vi ({distance:F2}m <= {effectiveAllowedDistance}m)");
                         }
                     }
                     else
                     {
                         // User location invalid
                         isFlagged = true;
-                        flagReason = "Kh�ng l?y ???c v? tr� h?p l? t? thi?t b?";
+                        flagReason = "Không lấy đượcc vị trí hợp lệ từ thiết bị";
                         Console.WriteLine($"? WARNING: User location invalid - Lat={model.Latitude}, Lng={model.Longitude}");
                     }
                 }
                 else
                 {
-                    // Slot kh�ng c� t?a ?? - cho ph�p ?i?m danh kh�ng c?n check v? tr�
-                    Console.WriteLine("? WARNING: Slot kh�ng c� t?a ?? GPS - b? qua ki?m tra kho?ng c�ch");
-                    distance = 0; // Set distance = 0 n?u kh�ng check
+                    // Slot không có tọa độ - cho phép điểm danh không cần check vị trí
+                    Console.WriteLine("? WARNING: Slot không có tọa độ GPS - bỏ qua kiểm tra khoảng cách");
+                    distance = 0; // Set distance = 0 nếu không check
                 }
 
                 // Determine attendance status
@@ -467,9 +467,9 @@ namespace AttendanceManagement.Controllers
                 {
                     isFlagged = true;
                     if (string.IsNullOrEmpty(flagReason))
-                        flagReason = "Thi?t b? ho?c IP tr�ng v?i sinh vi�n kh�c";
+                        flagReason = "Thiết bị hoặc IP trùng với sinh viên khác";
                     else
-                        flagReason += "; Thi?t b? ho?c IP tr�ng v?i sinh vi�n kh�c";
+                        flagReason += "; Thiết bị hoặc IP trùng với sinh viên khác";
                     
                     Console.WriteLine($"? FLAGGED: Duplicate device/IP detected");
                 }
@@ -508,7 +508,7 @@ namespace AttendanceManagement.Controllers
                         {
                             RecordId = record.RecordId,
                             Type = FlagType.OutOfRange,
-                            Reason = $"Kho?ng c�ch: {distance:F2}m (cho ph�p: {slot.AllowedDistanceMeters}m)",
+                            Reason = $"Khoảng cách: {distance:F2}m (cho phép: {slot.AllowedDistanceMeters}m)",
                             FlaggedAt = DateTime.UtcNow
                         });
                     }
@@ -519,7 +519,7 @@ namespace AttendanceManagement.Controllers
                         {
                             RecordId = record.RecordId,
                             Type = FlagType.DuplicateDevice,
-                            Reason = "Thi?t b? ho?c IP tr�ng v?i sinh vi�n kh�c",
+                            Reason = "Thiết bị hoặc IP trùng với sinh viên khác",
                             FlaggedAt = DateTime.UtcNow
                         });
                     }
@@ -528,13 +528,13 @@ namespace AttendanceManagement.Controllers
                 }
 
                 var message = isFlagged 
-                    ? $"?i?m danh th�nh c�ng! L?u �: {flagReason}" 
-                    : "?i?m danh th�nh c�ng!";
+                    ? $"Điểm danh thành công! Lưu ý: {flagReason}" 
+                    : "Điểm danh thành công!";
 
                 return Json(new { success = true, message = message });
             }
 
-            return Json(new { success = false, message = "D? li?u kh�ng h?p l?!" });
+            return Json(new { success = false, message = "Dữ liệu không hợp lệ!" });
         }
 
         // GET: Attendance/RequestLeave/5
@@ -558,7 +558,7 @@ namespace AttendanceManagement.Controllers
 
             if (hasRequested)
             {
-                TempData["ErrorMessage"] = "B?n ?� g?i ??n xin ngh? r?i!";
+                TempData["ErrorMessage"] = "Bạn đã gửi đơn xin nghỉ rồi!";
                 return RedirectToAction(nameof(SlotDetail), new { id });
             }
 
@@ -593,7 +593,7 @@ namespace AttendanceManagement.Controllers
 
                 if (hasRequested)
                 {
-                    TempData["ErrorMessage"] = "B?n ?� g?i ??n xin ngh? r?i!";
+                    TempData["ErrorMessage"] = "Bạn đã gửi đơn xin nghỉ rồi!";
                     return RedirectToAction(nameof(SlotDetail), new { id = model.SlotId });
                 }
 
@@ -620,7 +620,7 @@ namespace AttendanceManagement.Controllers
                 _context.LeaveRequests.Add(leaveRequest);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "G?i ??n xin ngh? th�nh c�ng!";
+                TempData["SuccessMessage"] = "Gửi đơn xin nghỉ thành công!";
                 return RedirectToAction(nameof(SlotDetail), new { id = model.SlotId });
             }
 
@@ -654,7 +654,7 @@ namespace AttendanceManagement.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "?� x? l� ??n xin ngh?!";
+            TempData["SuccessMessage"] = "Đã xử lý đơn xin nghỉ!";
             return RedirectToAction(nameof(SlotDetail), new { id = leaveRequest.SlotId });
         }
 

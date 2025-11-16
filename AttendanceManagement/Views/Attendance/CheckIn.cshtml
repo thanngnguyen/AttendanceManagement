@@ -1,6 +1,6 @@
-@model AttendanceManagement.ViewModels.CheckInViewModel
+﻿@model AttendanceManagement.ViewModels.CheckInViewModel
 @{
-    ViewData["Title"] = "?i?m danh";
+    ViewData["Title"] = "Điểm danh";
 }
 
 <div class="glass-bg-pink">
@@ -11,7 +11,7 @@
                     <div class="glass-header">
                         <h4 class="mb-0">
                             <i class="fas fa-map-marker-alt icon-glow"></i> 
-                            ?i?m danh
+                            Điểm danh
                         </h4>
                     </div>
                     
@@ -20,38 +20,37 @@
                         {
                             <div class="glass-alert-warning mb-4">
                                 <strong><i class="fas fa-flask"></i> TEST MODE</strong><br />
-                                Kho?ng c�ch cho ph�p ?� ???c t?ng l�n <strong>@ViewBag.AllowedDistance m�t</strong> 
-                                (g?c: @ViewBag.OriginalAllowedDistance m�t) ?? d? test.<br />
-                                <small>T?t TestMode trong appsettings.json ?? s? d?ng ch? ?? production.</small>
+                                Khoảng cách cho phép đã được tăng lên <strong>@ViewBag.AllowedDistance mét</strong> 
+                                (gốc: @ViewBag.OriginalAllowedDistance mét) để dễ test.<br />
+                                <small>Tắt TestMode trong appsettings.json để sử dụng chế độ production.</small>
                             </div>
                         }
                         
                         <div class="glass-alert-info mb-4">
-                            <strong><i class="fas fa-info-circle"></i> L?u �:</strong>
+                            <strong><i class="fas fa-info-circle"></i> Lưu ý:</strong>
                             <ul class="mt-2 mb-0" style="padding-left: 20px;">
-                                <li>B?n ph?i b?t ??nh v? tr�n thi?t b? ?? ?i?m danh</li>
-                                <li>Kho?ng c�ch cho ph�p: <strong>@ViewBag.AllowedDistance m�t</strong></li>
-                                <li>M?i sinh vi�n ch? ???c ?i?m danh m?t l?n</li>
+                                <li>Bạn phải bật định vị trên thiết bị để điểm danh</li>
+                                <li>Khoảng cách cho phép: <strong>@ViewBag.AllowedDistance mét</strong></li>
+                                <li>Mỗi sinh viên chỉ được điểm danh một lần</li>
                             </ul>
                         </div>
 
                         <div class="glass-box mb-3">
-                            <i class="fas fa-chalkboard"></i> <strong>L?p h?c:</strong> @ViewBag.ClassName
+                            <i class="fas fa-chalkboard"></i> <strong>Lớp học:</strong> @ViewBag.ClassName
                         </div>
                         <div class="glass-box mb-4">
-                            <i class="fas fa-calendar-check"></i> <strong>Phi�n:</strong> @ViewBag.SlotName
+                            <i class="fas fa-calendar-check"></i> <strong>Phiên:</strong> @ViewBag.SlotName
                         </div>
 
-                        <!-- Hi?n th? v? tr� l?p h?c -->
                         <div class="glass-card-sm mb-4" style="background: rgba(255, 182, 193, 0.2);">
                             <h6 class="text-white mb-3">
-                                <i class="fas fa-map-pin icon-glow"></i> V? tr� l?p h?c
+                                <i class="fas fa-map-pin icon-glow"></i> Vị trí lớp học
                             </h6>
                             <div class="glass-box mb-2">
-                                <strong>V? ??:</strong> <span id="slotLatDisplay">@ViewBag.SlotLatitude</span>
+                                <strong>Vĩ độ:</strong> <span id="slotLatDisplay">@ViewBag.SlotLatitude</span>
                             </div>
                             <div class="glass-box">
-                                <strong>Kinh ??:</strong> <span id="slotLngDisplay">@ViewBag.SlotLongitude</span>
+                                <strong>Kinh độ:</strong> <span id="slotLngDisplay">@ViewBag.SlotLongitude</span>
                             </div>
                         </div>
 
@@ -63,18 +62,16 @@
 
                             <div class="mb-4">
                                 <label asp-for="StudentName" class="form-label">
-                                    <i class="fas fa-user"></i> H? v� t�n
+                                    <i class="fas fa-user"></i> Họ và tên
                                 </label>
                                 <input asp-for="StudentName" class="form-control glass-input" readonly />
-                                <span asp-validation-for="StudentName" class="text-danger"></span>
                             </div>
 
                             <div class="mb-4">
                                 <label asp-for="StudentCode" class="form-label">
-                                    <i class="fas fa-id-card"></i> M� sinh vi�n
+                                    <i class="fas fa-id-card"></i> Mã sinh viên
                                 </label>
                                 <input asp-for="StudentCode" class="form-control glass-input" readonly />
-                                <span asp-validation-for="StudentCode" class="text-danger"></span>
                             </div>
 
                             <div class="mb-4">
@@ -82,38 +79,39 @@
                                     <i class="fas fa-envelope"></i> Email
                                 </label>
                                 <input asp-for="Email" class="form-control glass-input" readonly />
-                                <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
 
                             <div class="mb-4">
                                 <label asp-for="PhoneNumber" class="form-label">
-                                    <i class="fas fa-phone"></i> S? ?i?n tho?i
+                                    <i class="fas fa-phone"></i> Số điện thoại
                                 </label>
                                 <input asp-for="PhoneNumber" class="form-control glass-input" placeholder="0123456789" />
-                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
                             <div class="glass-alert-info mb-4 pulse" id="locationStatus">
-                                <i class="fas fa-spinner fa-spin"></i> ?ang l?y v? tr� c?a b?n...
+                                <i class="fas fa-spinner fa-spin"></i> Đang lấy vị trí của bạn...
+                                <div class="mt-2" style="font-size: 0.85rem;">
+                                    <small>⏱️ Vui lòng đợi 5-30 giây...</small>
+                                </div>
                             </div>
 
                             <div id="locationInfo" class="mb-4" style="display:none;">
                                 <div class="glass-card-sm" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));">
                                     <h6 class="text-white mb-3">
-                                        <i class="fas fa-map-pin icon-glow"></i> V? tr� c?a b?n
+                                        <i class="fas fa-map-pin icon-glow"></i> Vị trí của bạn
                                     </h6>
                                     <div class="glass-box mb-2">
-                                        <strong>V? ??:</strong> <span id="displayLat"></span>
+                                        <strong>Vĩ độ:</strong> <span id="displayLat"></span>
                                     </div>
                                     <div class="glass-box mb-2">
-                                        <strong>Kinh ??:</strong> <span id="displayLng"></span>
+                                        <strong>Kinh độ:</strong> <span id="displayLng"></span>
                                     </div>
                                     <div class="glass-box mb-3">
-                                        <strong>?? ch�nh x�c:</strong> <span id="accuracy"></span> m�t
+                                        <strong>Độ chính xác:</strong> <span id="accuracy"></span> mét
                                     </div>
                                     <div class="glass-divider"></div>
                                     <div class="text-center glass-box">
-                                        <small class="text-glass-muted d-block mb-1">Kho?ng c�ch t? l?p</small>
+                                        <small class="text-glass-muted d-block mb-1">Khoảng cách từ lớp</small>
                                         <span id="distance" class="text-white" style="font-size: 1.8rem; font-weight: 800;"></span>
                                     </div>
                                 </div>
@@ -121,11 +119,13 @@
 
                             <div class="d-grid gap-3">
                                 <button type="submit" class="btn btn-gradient-success btn-lg" id="submitBtn" disabled>
-                                    <i class="fas fa-check-circle"></i> X�c nh?n ?i?m danh
+                                    <i class="fas fa-check-circle"></i> Xác nhận điểm danh
                                 </button>
-                                <a asp-action="SlotDetail" asp-route-id="@Model.SlotId" 
-                                   class="btn btn-gradient-secondary">
-                                    <i class="fas fa-arrow-left"></i> Quay l?i
+                                <button type="button" class="btn btn-gradient-info" id="retryBtn" style="display:none;">
+                                    <i class="fas fa-sync-alt"></i> Thử lại
+                                </button>
+                                <a asp-action="SlotDetail" asp-route-id="@Model.SlotId" class="btn btn-gradient-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
                                 </a>
                             </div>
                         </form>
@@ -142,145 +142,160 @@
         const slotLat = @(ViewBag.SlotLatitude ?? 0);
         const slotLng = @(ViewBag.SlotLongitude ?? 0);
         const allowedDistance = @ViewBag.AllowedDistance;
+        let attempts = 0;
 
-        console.log('=== TH�NG TIN ?I?M DANH ===');
-        console.log('V? tr� l?p h?c: Lat=' + slotLat + ', Lng=' + slotLng);
-        console.log('Kho?ng c�ch cho ph�p: ' + allowedDistance + ' m�t');
+        console.log('📍 Slot: Lat=' + slotLat + ', Lng=' + slotLng + ', Distance=' + allowedDistance + 'm');
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371000; // Earth's radius in meters
+            const R = 6371000;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                       Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
         function getLocation() {
-            if (navigator.geolocation) {
-                console.log('?ang l?y v? tr� GPS...');
-                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+            attempts++;
+            console.log('🔄 Attempt #' + attempts);
+            
+            $('#locationStatus')
+                .removeClass('glass-alert-danger glass-alert-success glass-alert-warning')
+                .addClass('glass-alert-info pulse')
+                .html('<i class="fas fa-spinner fa-spin"></i> Đang lấy vị trí... (Lần #' + attempts + ')<br><small>⏱️ Đợi 5-30 giây...</small>');
+            
+            $('#retryBtn').hide();
+            
+            if (!navigator.geolocation) {
+                showError({ code: 0, message: 'Trình duyệt không hỗ trợ GPS' });
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const acc = position.coords.accuracy;
+                    
+                    console.log('✅ Success! Lat:' + lat + ', Lng:' + lng + ', Acc:±' + acc + 'm');
+                    
+                    $('#latitude').val(lat);
+                    $('#longitude').val(lng);
+                    $('#displayLat').text(lat.toFixed(6));
+                    $('#displayLng').text(lng.toFixed(6));
+                    $('#accuracy').text('±' + acc.toFixed(2));
+
+                    let dist = 0;
+                    let distText = '';
+
+                    if (slotLat && slotLng && slotLat != 0 && slotLng != 0) {
+                        dist = calculateDistance(lat, lng, slotLat, slotLng);
+                        distText = dist.toFixed(2) + ' mét';
+                        
+                        console.log('📏 Distance: ' + dist.toFixed(2) + 'm vs ' + allowedDistance + 'm');
+                        
+                        if (dist > allowedDistance) {
+                            console.log('❌ OUT OF RANGE');
+                            $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-warning')
+                                .html('<i class="fas fa-exclamation-triangle"></i> <strong>Cảnh báo: Ngoài phạm vi</strong><br>' +
+                                      '<small>' + dist.toFixed(2) + 'm > ' + allowedDistance + 'm</small><br>' +
+                                      '<small style="color:#2d3748;font-weight:700">⚠️ Sẽ bị đánh dấu vi phạm!</small>');
+                        } else {
+                            console.log('✅ IN RANGE');
+                            $('#locationStatus').removeClass('pulse').addClass('glass-alert-success')
+                                .html('<i class="fas fa-check-circle"></i> <strong>Vị trí hợp lệ!</strong><br>' +
+                                      '<small>' + dist.toFixed(2) + 'm ≤ ' + allowedDistance + 'm</small>');
+                        }
+                    } else {
+                        distText = 'Không có dữ liệu vị trí lớp';
+                        $('#locationStatus').removeClass('pulse').addClass('glass-alert-success')
+                            .html('<i class="fas fa-check-circle"></i> Đã lấy được vị trí!');
+                    }
+
+                    $('#distance').text(distText);
+                    $('#locationInfo').slideDown();
+                    $('#submitBtn').prop('disabled', false);
+                },
+                function(error) {
+                    console.error('❌ Error #' + attempts + ':', error);
+                    
+                    let msg = '';
+                    let detail = '';
+                    let canRetry = false;
+                    
+                    if (error.code === 1) {
+                        msg = 'Từ chối quyền truy cập';
+                        detail = '1. Click 🔒 bên trái URL<br>2. Cho phép Location<br>3. Reload (F5)';
+                    } else if (error.code === 2) {
+                        msg = 'Không xác định được vị trí';
+                        detail = '1. Bật GPS<br>2. Bật WiFi<br>3. Ra gần cửa sổ<br>4. Thử lại';
+                        canRetry = attempts < 3;
+                    } else if (error.code === 3) {
+                        msg = 'Timeout (30s)';
+                        detail = '1. Bật GPS<br>2. Ra ngoài trời<br>3. Thử lại';
+                        canRetry = attempts < 3;
+                    } else {
+                        msg = 'Lỗi không xác định';
+                        detail = 'Liên hệ giáo viên';
+                        canRetry = attempts < 3;
+                    }
+                    
+                    $('#locationStatus')
+                        .removeClass('pulse glass-alert-info')
+                        .addClass('glass-alert-danger')
+                        .html('<i class="fas fa-exclamation-triangle"></i> <strong>' + msg + '</strong><br>' +
+                              '<small>' + detail + '</small>');
+                    
+                    if (canRetry) {
+                        $('#retryBtn').show();
+                    } else {
+                        $('#locationStatus').append('<br><small style="color:#dc3545;font-weight:600">❌ Đã thử ' + attempts + ' lần!</small>');
+                    }
+                },
+                {
                     enableHighAccuracy: true,
-                    timeout: 10000,
+                    timeout: 30000,
                     maximumAge: 0
-                });
-            } else {
-                $('#locationStatus').removeClass('pulse').addClass('glass-alert-danger')
-                    .html('<i class="fas fa-exclamation-triangle"></i> Tr�nh duy?t c?a b?n kh�ng h? tr? ??nh v?.');
-            }
-        }
-
-        function showPosition(position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
-            
-            console.log('=== V? TR� C?A B?N ===');
-            console.log('Lat: ' + userLat);
-            console.log('Lng: ' + userLng);
-            console.log('?? ch�nh x�c: +/-' + accuracy + ' m�t');
-            
-            $('#latitude').val(userLat);
-            $('#longitude').val(userLng);
-            $('#displayLat').text(userLat.toFixed(6));
-            $('#displayLng').text(userLng.toFixed(6));
-            $('#accuracy').text('�' + accuracy.toFixed(2));
-
-            let distance = 0;
-            let distanceText = '';
-            let canCheckIn = true;
-
-            if (slotLat && slotLng && slotLat != 0 && slotLng != 0) {
-                distance = calculateDistance(userLat, userLng, slotLat, slotLng);
-                distanceText = distance.toFixed(2) + ' m�t';
-                
-                console.log('=== T�NH KHO?NG C�CH ===');
-                console.log('Kho?ng c�ch t�nh ???c: ' + distance.toFixed(2) + ' m�t');
-                console.log('So v?i cho ph�p: ' + distance.toFixed(2) + ' vs ' + allowedDistance + ' m�t');
-                
-                if (distance > allowedDistance) {
-                    console.log('? NGO�I PH?M VI - S? B? FLAG');
-                    $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-warning')
-                        .html('<i class="fas fa-exclamation-triangle icon-glow"></i> <strong>C?nh b�o:</strong> B?n ?ang ? ngo�i ph?m vi cho ph�p<br>' +
-                              '<small>Kho?ng c�ch: ' + distance.toFixed(2) + 'm (cho ph�p: ' + allowedDistance + 'm)</small><br>' +
-                              '<small style="color: #2d3748; font-weight: 700;">?? ?i?m danh c?a b?n s? b? ?�nh d?u vi ph?m!</small>');
-                    canCheckIn = true;
-                } else {
-                    console.log('? TRONG PH?M VI - H?P L?');
-                    $('#locationStatus').removeClass('pulse').addClass('glass-alert-success')
-                        .html('<i class="fas fa-check-circle icon-glow"></i> <strong>V? tr� h?p l?!</strong><br>' +
-                              '<small>Kho?ng c�ch: ' + distance.toFixed(2) + 'm ? ' + allowedDistance + 'm</small>');
                 }
-            } else {
-                console.log('?? Kh�ng c� d? li?u v? tr� l?p h?c');
-                distanceText = 'Kh�ng c� d? li?u v? tr� l?p h?c';
-                $('#locationStatus').removeClass('pulse').addClass('glass-alert-success')
-                    .html('<i class="fas fa-check-circle icon-glow"></i> ?� l?y ???c v? tr� c?a b?n.');
-            }
-
-            $('#distance').text(distanceText);
-            $('#locationInfo').slideDown();
-            
-            if (canCheckIn) {
-                $('#submitBtn').prop('disabled', false);
-            }
-        }
-
-        function showError(error) {
-            let errorMsg = '';
-            console.error('? L?I GPS:', error);
-            
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    errorMsg = 'B?n ?� t? ch?i quy?n truy c?p v? tr�. Vui l�ng b?t ??nh v? ?? ?i?m danh.';
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    errorMsg = 'Kh�ng th? x�c ??nh v? tr� c?a b?n. Vui l�ng ki?m tra GPS/WiFi.';
-                    break;
-                case error.TIMEOUT:
-                    errorMsg = 'H?t th?i gian ch? l?y v? tr�. Vui l�ng th? l?i.';
-                    break;
-                default:
-                    errorMsg = 'C� l?i x?y ra khi l?y v? tr�.';
-            }
-            $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-danger')
-                .html('<i class="fas fa-exclamation-triangle icon-glow"></i> ' + errorMsg);
+            );
         }
 
         $(document).ready(function() {
+            console.log('🚀 Page loaded - Starting GPS...');
             getLocation();
+
+            $('#retryBtn').click(function() {
+                getLocation();
+            });
 
             $('#checkInForm').submit(function(e) {
                 e.preventDefault();
                 
                 if (!$('#latitude').val() || !$('#longitude').val()) {
-                    alert('?? Vui l�ng b?t ??nh v?!');
+                    alert('⚠️ Chưa có vị trí!\n\n1. Bật GPS\n2. Cho phép Location\n3. Reload (F5)');
                     return;
                 }
 
-                console.log('=== G?I ?I?M DANH ===');
-                $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> ?ang x? l�...');
+                console.log('📤 Submitting...');
+                $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang xử lý...');
 
                 $.ajax({
                     url: '@Url.Action("CheckIn", "Attendance")',
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
-                        console.log('? Response:', response);
                         if (response.success) {
-                            alert('? ' + response.message);
+                            alert('✅ ' + response.message);
                             window.location.href = '@Url.Action("SlotDetail", "Attendance", new { id = Model.SlotId })';
                         } else {
-                            alert('? ' + response.message);
-                            $('#submitBtn').prop('disabled', false).html('<i class="fas fa-check-circle"></i> X�c nh?n ?i?m danh');
+                            alert('❌ ' + response.message);
+                            $('#submitBtn').prop('disabled', false).html('<i class="fas fa-check-circle"></i> Xác nhận điểm danh');
                         }
                     },
-                    error: function(xhr, status, error) {
-                        console.error('? Ajax error:', status, error);
-                        alert('? C� l?i x?y ra. Vui l�ng th? l?i!');
-                        $('#submitBtn').prop('disabled', false).html('<i class="fas fa-check-circle"></i> X�c nh?n ?i?m danh');
+                    error: function() {
+                        alert('❌ Lỗi kết nối!');
+                        $('#submitBtn').prop('disabled', false).html('<i class="fas fa-check-circle"></i> Xác nhận điểm danh');
                     }
                 });
             });

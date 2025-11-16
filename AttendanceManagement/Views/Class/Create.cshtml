@@ -35,14 +35,14 @@
                                 <span asp-validation-for="Subject" class="text-danger"></span>
                             </div>
 
-                            <div class="mb-4">
+                            @* <div class="mb-4">
                                 <label asp-for="Room" class="form-label">
                                     <i class="fas fa-door-open"></i> Phòng học
                                 </label>
                                 <input asp-for="Room" class="form-control glass-input" 
                                        placeholder="VD: A101, B203" />
                                 <span asp-validation-for="Room" class="text-danger"></span>
-                            </div>
+                            </div> *@
 
                             <div class="mb-4">
                                 <label asp-for="Description" class="form-label">
@@ -55,20 +55,20 @@
 
                             <div class="glass-divider"></div>
 
-                            <h5 class="section-title">
+                            @* <h5 class="section-title">
                                 <i class="fas fa-map-marker-alt"></i> 
                                 Cài đặt vị trí điểm danh
                             </h5>
                             
                             <div class="glass-alert-info mb-4">
                                 <i class="fas fa-info-circle"></i> Sinh viên cần ở trong phạm vi này để điểm danh hợp lệ
-                            </div>
+                            </div> *@
 
-                            <button type="button" class="btn btn-gradient-info w-100 mb-4" onclick="getCurrentLocation()">
+                            @* <button type="button" class="btn btn-gradient-info w-100 mb-4" onclick="getCurrentLocation()">
                                 <i class="fas fa-crosshairs"></i> Lấy vị trí hiện tại (Khuyến nghị)
-                            </button>
+                            </button> *@
 
-                            <div class="row">
+                            @* <div class="row">
                                 <div class="col-md-6 mb-4">
                                     <label asp-for="ClassLatitude" class="form-label">
                                         <i class="fas fa-map-pin"></i> Vĩ độ (Latitude)
@@ -86,9 +86,9 @@
                                            step="any" placeholder="VD: 105.8542" id="ClassLongitude" />
                                     <span asp-validation-for="ClassLongitude" class="text-danger"></span>
                                 </div>
-                            </div>
+                            </div> *@
 
-                            <div class="mb-4">
+                            @* <div class="mb-4">
                                 <label asp-for="AllowedDistanceMeters" class="form-label">
                                     <i class="fas fa-ruler-combined"></i> Khoảng cách cho phép (mét)
                                 </label>
@@ -98,11 +98,11 @@
                                 <div class="form-text text-glass-muted mt-2">
                                     <i class="fas fa-info-circle"></i> Khoảng cách tối đa từ vị trí lớp học
                                 </div>
-                            </div>
+                            </div> *@
 
-                            <div id="locationStatus" class="glass-alert-success mb-4" style="display:none;">
+                            @* <div id="locationStatus" class="glass-alert-success mb-4" style="display:none;">
                                 <i class="fas fa-check-circle"></i> <span id="locationText"></span>
-                            </div>
+                            </div> *@
 
                             <div class="d-grid gap-3">
                                 <button type="submit" class="btn btn-gradient-primary btn-lg">
@@ -113,15 +113,6 @@
                                 </a>
                             </div>
                         </form>
-
-                        <div class="glass-alert-warning mt-4">
-                            <strong><i class="fas fa-lightbulb"></i> Mẹo:</strong>
-                            <ul class="mb-0 mt-2" style="padding-left: 20px;">
-                                <li>Sử dụng nút "Lấy vị trí hiện tại" nếu bạn đang ở lớp học</li>
-                                <li>Hoặc copy tọa độ từ Google Maps (Right-click → Copy coordinates)</li>
-                                <li>Khoảng cách khuyến nghị: 50-100m cho lớp nhỏ, 100-200m cho building lớn</li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -129,7 +120,7 @@
     </div>
 </div>
 
-@section Scripts {
+@* @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         function getCurrentLocation() {
@@ -177,4 +168,4 @@
             }
         }
     </script>
-}
+} *@
