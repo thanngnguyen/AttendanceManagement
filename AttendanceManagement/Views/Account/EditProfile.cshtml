@@ -1,0 +1,157 @@
+﻿@model AttendanceManagement.ViewModels.EditProfileViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa hồ sơ";
+}
+
+<div class="glass-bg-blue">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-edit icon-glow"></i> Chỉnh sửa hồ sơ
+                        </h4>
+                    </div>
+                    
+                    <div class="glass-body">
+                        <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <!-- Avatar Upload -->
+                            <div class="mb-4 text-center">
+                                <div class="mb-3">
+                                    @if (!string.IsNullOrEmpty(Model.CurrentProfileImageUrl))
+                                    {
+                                        <img src="@Model.CurrentProfileImageUrl" alt="Avatar" id="avatarPreview"
+                                             class="rounded-circle" 
+                                             style="width: 150px; height: 150px; object-fit: cover; border: 4px solid rgba(255,255,255,0.3);" />
+                                    }
+                                    else
+                                    {
+                                        <div id="avatarPlaceholder" class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                             style="width: 150px; height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 4px solid rgba(255,255,255,0.3);">
+                                            <i class="fas fa-user fa-4x text-white"></i>
+                                        </div>
+                                        <img src="" alt="Avatar" id="avatarPreview" class="rounded-circle d-none"
+                                             style="width: 150px; height: 150px; object-fit: cover; border: 4px solid rgba(255,255,255,0.3);" />
+                                    }
+                                </div>
+
+                                <label for="profileImageInput" class="btn btn-gradient-info btn-sm">
+                                    <i class="fas fa-camera"></i> Chọn ảnh mới
+                                </label>
+                                <input type="file" id="profileImageInput" asp-for="ProfileImage" 
+                                       accept="image/*" style="display: none;" onchange="previewAvatar(this)" />
+                                <small class="d-block mt-2 text-glass-muted">
+                                    Định dạng: JPG, PNG. Kích thước tối đa: 5MB
+                                </small>
+                            </div>
+
+                            <div class="glass-divider"></div>
+
+                            <!-- Full Name -->
+                            <div class="mb-4">
+                                <label asp-for="FullName" class="form-label">
+                                    <i class="fas fa-user"></i> Họ và tên <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="FullName" class="form-control glass-input" 
+                                       placeholder="Nhập họ và tên đầy đủ" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <!-- Bio/About Section -->
+                            <div class="mb-4">
+                                <label asp-for="Bio" class="form-label">
+                                    <i class="fas fa-quote-left"></i> Giới thiệu bản thân
+                                </label>
+                                <textarea asp-for="Bio" class="form-control glass-input" rows="5" 
+                                          placeholder="Chia sẻ về bản thân, thành tích, sở thích, mục tiêu..."></textarea>  
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="mb-4">
+                                <label asp-for="PhoneNumber" class="form-label">
+                                    <i class="fas fa-phone"></i> Số điện thoại
+                                </label>
+                                <input asp-for="PhoneNumber" class="form-control glass-input" 
+                                       placeholder="0123456789" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="glass-divider"></div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-gradient-success btn-lg">
+                                    <i class="fas fa-save"></i> Lưu thay đổi
+                                </button>
+                                <a asp-action="Profile" class="btn btn-gradient-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                const file = input.files[0];
+
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('⚠️ File quá lớn! Vui lòng chọn ảnh nhỏ hơn 5MB.');
+                    input.value = '';
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.match('image.*')) {
+                    alert('⚠️ Vui lòng chọn file ảnh (JPG, PNG)!');
+                    input.value = '';
+                    return;
+                }
+
+                reader.onload = function(e) {
+                    $('#avatarPreview').attr('src', e.target.result).removeClass('d-none');
+                    $('#avatarPlaceholder').addClass('d-none');
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Character counter for Bio
+        $(document).ready(function() {
+            const bioTextarea = $('textarea[name="Bio"]');
+            const charCount = $('#bioCharCount');
+            const maxChars = 500;
+
+            function updateCharCount() {
+                const currentLength = bioTextarea.val().length;
+                charCount.text(currentLength);
+
+                if (currentLength > maxChars) {
+                    charCount.css('color', '#f5576c');
+                    charCount.parent().html('<span id="bioCharCount" style="color: #f5576c; font-weight: 600;">' + currentLength + '</span>/500 ký tự - <strong style="color: #f5576c;">Vượt quá giới hạn!</strong>');
+                } else if (currentLength > maxChars * 0.9) {
+                    charCount.css('color', '#fbb03b');
+                } else {
+                    charCount.css('color', '#4a5568');
+                    charCount.parent().html('<span id="bioCharCount">' + currentLength + '</span>/500 ký tự');
+                }
+            }
+
+            bioTextarea.on('input', updateCharCount);
+            updateCharCount();
+        });
+    </script>
+}

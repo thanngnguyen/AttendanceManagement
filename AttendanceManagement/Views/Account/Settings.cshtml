@@ -1,0 +1,205 @@
+﻿@model AttendanceManagement.ViewModels.AccountSettingsViewModel
+@{
+    ViewData["Title"] = "Cài đặt tài khoản";
+}
+
+<div class="glass-bg-pink">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-cog icon-glow"></i> Cài đặt tài khoản
+                        </h4>
+                    </div>
+                    
+                    <div class="glass-body">
+                        <!-- Security Settings -->
+                        <h5 class="section-title">
+                            <i class="fas fa-shield-alt"></i> Bảo mật
+                        </h5>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="glass-card-sm" style="background: rgba(102, 126, 234, 0.2);">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong class="d-block">Email</strong>
+                                            <small class="text-glass-muted">@Model.Email</small>
+                                        </div>
+                                        <div>
+                                            @if (Model.EmailConfirmed)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Đã xác nhận
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">
+                                                    <i class="fas fa-exclamation-triangle"></i> Chưa xác nhận
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="glass-card-sm" style="background: rgba(251, 176, 59, 0.2);">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong class="d-block">Xác thực 2 bước</strong>
+                                            <small class="text-glass-muted">Bảo vệ tài khoản</small>
+                                        </div>
+                                        <div>
+                                            @if (Model.TwoFactorEnabled)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Đã bật
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-times"></i> Chưa bật
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-divider"></div>
+
+                        <!-- Account Status -->
+                        <h5 class="section-title">
+                            <i class="fas fa-user-shield"></i> Trạng thái tài khoản
+                        </h5>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-3">
+                                <div class="glass-box">
+                                    <small class="text-glass-muted d-block mb-1">Số lần đăng nhập sai</small>
+                                    <strong class="h4 mb-0">
+                                        @Model.AccessFailedCount
+                                        @if (Model.AccessFailedCount > 0)
+                                        {
+                                            <small class="text-warning">/ 5</small>
+                                        }
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <div class="glass-box">
+                                    <small class="text-glass-muted d-block mb-1">Khóa tài khoản</small>
+                                    @if (Model.LockoutEnabled)
+                                    {
+                                        <span class="badge bg-info">Đã bật</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Tắt</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <div class="glass-box">
+                                    <small class="text-glass-muted d-block mb-1">Trạng thái khóa</small>
+                                    @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.Now)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-lock"></i> Đang khóa
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-unlock"></i> Hoạt động
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.Now)
+                        {
+                            <div class="glass-alert-danger mb-4">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <strong>Tài khoản đang bị khóa!</strong><br />
+                                Mở khóa lúc: @Model.LockoutEnd.Value.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        }
+
+                        <div class="glass-divider"></div>
+
+                        <!-- Security Tips -->
+                        <h5 class="section-title">
+                            <i class="fas fa-lightbulb"></i> Mẹo bảo mật
+                        </h5>
+
+                        <div class="glass-alert-info mb-4">
+                            <ul class="mb-0" style="padding-left: 20px;">
+                                <li class="mb-2">
+                                    <strong>Đổi mật khẩu định kỳ:</strong> Nên đổi mật khẩu mỗi 3-6 tháng
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Sử dụng mật khẩu mạnh:</strong> Kết hợp chữ hoa, chữ thường, số và ký tự đặc biệt
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Không chia sẻ mật khẩu:</strong> Không cho người khác biết mật khẩu của bạn
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Đăng xuất khi xong:</strong> Nhớ đăng xuất khi sử dụng máy chung
+                                </li>
+                                <li class="mb-0">
+                                    <strong>Bật xác thực 2 bước:</strong> Tăng cường bảo mật cho tài khoản (sắp có)
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="glass-divider"></div>
+
+                        <!-- Quick Actions -->
+                        <div class="d-grid gap-3">
+                            <a asp-action="ChangePassword" class="btn btn-gradient-primary btn-lg">
+                                <i class="fas fa-key"></i> Đổi mật khẩu
+                            </a>
+                            <a asp-action="Profile" class="btn btn-gradient-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại hồ sơ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="glass-card mt-4" style="border: 2px solid rgba(245, 87, 108, 0.5);">
+                    <div class="glass-header" style="background: rgba(245, 87, 108, 0.2);">
+                        <h5 class="mb-0 text-danger">
+                            <i class="fas fa-exclamation-triangle"></i> Vùng nguy hiểm
+                        </h5>
+                    </div>
+                    <div class="glass-body">
+                        <div class="glass-alert-danger">
+                            <strong><i class="fas fa-info-circle"></i> Lưu ý:</strong> 
+                            Các hành động trong vùng này không thể hoàn tác.
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-outline-danger" disabled>
+                                <i class="fas fa-trash"></i> Xóa tài khoản
+                            </button>
+                            <small class="d-block mt-2 text-glass-muted">
+                                Tính năng đang phát triển
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

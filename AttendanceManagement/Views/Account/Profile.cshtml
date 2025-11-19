@@ -1,0 +1,230 @@
+﻿@model AttendanceManagement.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Hồ sơ";
+}
+
+<div class="glass-bg-purple">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="glass-alert-success mb-4">
+                        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                    </div>
+                }
+
+                <div class="row">
+                    <!-- LEFT: Profile Card -->
+                    <div class="col-md-4 mb-4">
+                        <div class="glass-card">
+                            <div class="glass-body text-center">
+                                <div class="mb-4">
+                                    @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                                    {
+                                        <img src="@Model.ProfileImageUrl" alt="Avatar" 
+                                             class="rounded-circle" 
+                                             style="width: 150px; height: 150px; object-fit: cover; border: 4px solid rgba(255,255,255,0.3);" />
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                             style="width: 150px; height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 4px solid rgba(255,255,255,0.3);">
+                                            <i class="fas fa-user fa-4x text-white"></i>
+                                        </div>
+                                    }
+                                </div>
+
+                                <h4 class="text-white mb-2">@Model.FullName</h4>
+                                <p class="text-glass-muted mb-3">
+                                    <i class="fas fa-envelope"></i> @Model.Email
+                                </p>
+
+                                @if (!string.IsNullOrEmpty(Model.StudentId))
+                                {
+                                    <div class="glass-box mb-3">
+                                        <i class="fas fa-id-card"></i> <strong>MSSV:</strong> @Model.StudentId
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                                {
+                                    <div class="glass-box mb-3">
+                                        <i class="fas fa-phone"></i> @Model.PhoneNumber
+                                    </div>
+                                }
+
+                                <div class="glass-box mb-3">
+                                    <i class="fas fa-user-tag"></i> <strong>Vai trò:</strong> 
+                                    @if (Model.Role == "Student")
+                                    {
+                                        <span class="badge bg-info">Sinh viên</span>
+                                    }
+                                    else if (Model.Role == "Teacher")
+                                    {
+                                        <span class="badge bg-success">Giáo viên</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Admin</span>
+                                    }
+                                </div>
+
+                                <!-- Bio Section -->
+                                @if (!string.IsNullOrEmpty(Model.Bio))
+                                {
+                                    <div class="glass-divider"></div>
+                                    <div class="glass-box mb-3 text-start">
+                                        <h6 class="text-white mb-2">
+                                            <i class="fas fa-quote-left"></i> Giới thiệu
+                                        </h6>
+                                        <p class="text-glass-muted mb-0" style="white-space: pre-line; font-size: 0.9rem;">@Model.Bio</p>
+                                    </div>
+                                }
+
+                                <div class="glass-divider"></div>
+
+                                <div class="d-grid gap-2">
+                                    <a asp-action="EditProfile" class="btn btn-gradient-primary">
+                                        <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
+                                    </a>
+                                    <a asp-action="ChangePassword" class="btn btn-gradient-info">
+                                        <i class="fas fa-key"></i> Đổi mật khẩu
+                                    </a>
+                                    <a asp-action="Settings" class="btn btn-gradient-secondary">
+                                        <i class="fas fa-cog"></i> Cài đặt
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Statistics & Info -->
+                    <div class="col-md-8">
+                        <!-- Statistics -->
+                        <div class="glass-card mb-4">
+                            <div class="glass-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-bar icon-glow"></i> Thống kê
+                                </h5>
+                            </div>
+                            <div class="glass-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="glass-card-sm" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-chalkboard fa-2x icon-glow"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <small class="text-glass-muted d-block">Lớp học</small>
+                                                    <h3 class="mb-0 text-white">@Model.TotalClasses</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <div class="glass-card-sm" style="background: linear-gradient(135deg, rgba(251, 176, 59, 0.2), rgba(245, 101, 101, 0.2));">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-clipboard-check fa-2x icon-glow"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <small class="text-glass-muted d-block">
+                                                        @if (Model.Role == "Student")
+                                                        {
+                                                            <text>Bài tập đã nộp</text>
+                                                        }
+                                                        else
+                                                        {
+                                                            <text>Bài tập đã tạo</text>
+                                                        }
+                                                    </small>
+                                                    <h3 class="mb-0 text-white">@Model.TotalAssignments</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if (Model.Role == "Student")
+                                    {
+                                        <div class="col-md-6 mb-3">
+                                            <div class="glass-card-sm" style="background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="fas fa-user-check fa-2x icon-glow"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <small class="text-glass-muted d-block">Lần điểm danh</small>
+                                                        <h3 class="mb-0 text-white">@Model.TotalAttendances</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <div class="glass-card-sm" style="background: linear-gradient(135deg, rgba(214, 51, 108, 0.2), rgba(168, 85, 247, 0.2));">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="fas fa-percentage fa-2x icon-glow"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <small class="text-glass-muted d-block">Tỷ lệ điểm danh</small>
+                                                        <h3 class="mb-0 text-white">@Model.AttendanceRate.ToString("F1")%</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Info -->
+                        <div class="glass-card">
+                            <div class="glass-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle icon-glow"></i> Thông tin tài khoản
+                                </h5>
+                            </div>
+                            <div class="glass-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="glass-box">
+                                            <small class="text-glass-muted d-block mb-1">
+                                                <i class="fas fa-calendar-plus"></i> Ngày tạo tài khoản
+                                            </small>
+                                            <strong>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</strong>
+                                        </div>
+                                    </div>
+
+                                    @if (Model.LastLoginAt.HasValue)
+                                    {
+                                        <div class="col-md-6 mb-3">
+                                            <div class="glass-box">
+                                                <small class="text-glass-muted d-block mb-1">
+                                                    <i class="fas fa-sign-in-alt"></i> Lần đăng nhập cuối
+                                                </small>
+                                                <strong>@Model.LastLoginAt.Value.ToString("dd/MM/yyyy HH:mm")</strong>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="glass-divider"></div>
+
+                                <div class="glass-alert-info">
+                                    <i class="fas fa-shield-alt"></i> 
+                                    <strong>Bảo mật:</strong> Nên đổi mật khẩu định kỳ để bảo vệ tài khoản của bạn.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

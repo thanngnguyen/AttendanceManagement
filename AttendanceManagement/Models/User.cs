@@ -20,6 +20,9 @@ namespace AttendanceManagement.Models
         [StringLength(500)]
         public string? ProfileImageUrl { get; set; }
 
+        [StringLength(500)]
+        public string? Bio { get; set; } // Gi?i thi?u b?n thân / Thành tích
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginAt { get; set; }
 
