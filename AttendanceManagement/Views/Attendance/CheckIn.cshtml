@@ -139,145 +139,173 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        const slotLat = @(ViewBag.SlotLatitude ?? 0);
-        const slotLng = @(ViewBag.SlotLongitude ?? 0);
-        const allowedDistance = @ViewBag.AllowedDistance;
+        // Parse and round slot location
+        let slotLatRaw = '@(ViewBag.SlotLatitude ?? "0")'.replace(',', '.');
+        let slotLngRaw = '@(ViewBag.SlotLongitude ?? "0")'.replace(',', '.');
+        
+        let slotLat = Math.round(parseFloat(slotLatRaw) * 1000000) / 1000000 || 0;
+        let slotLng = Math.round(parseFloat(slotLngRaw) * 1000000) / 1000000 || 0;
+        
+        const allowedDistance = parseFloat('@(ViewBag.AllowedDistance ?? "100")') || 100;
+        const hasSlotLocation = slotLat !== 0 && slotLng !== 0 && !isNaN(slotLat) && !isNaN(slotLng) &&
+                                Math.abs(slotLat) <= 90 && Math.abs(slotLng) <= 180;
+        
         let attempts = 0;
-
-        console.log('📍 Slot: Lat=' + slotLat + ', Lng=' + slotLng + ', Distance=' + allowedDistance + 'm');
+        const MAX_ATTEMPTS = 5;
+        let gpsRequestInProgress = false;
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371000;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLon/2) * Math.sin(dLon/2);
-            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const lat1Rad = lat1 * Math.PI / 180;
+            const lat2Rad = lat2 * Math.PI / 180;
+            const deltaLatRad = (lat2 - lat1) * Math.PI / 180;
+            const deltaLonRad = (lon2 - lon1) * Math.PI / 180;
+            
+            const a = Math.sin(deltaLatRad / 2) * Math.sin(deltaLatRad / 2) +
+                      Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                      Math.sin(deltaLonRad / 2) * Math.sin(deltaLonRad / 2);
+            
+            const c = 2 * Math.asin(Math.min(1.0, Math.sqrt(a)));
+            return R * c;
+        }
+
+        function handleLocationSuccess(position) {
+            gpsRequestInProgress = false;
+            
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const acc = position.coords.accuracy;
+            
+            const roundedLat = Math.round(lat * 1000000) / 1000000;
+            const roundedLng = Math.round(lng * 1000000) / 1000000;
+            
+            $('#latitude').val(roundedLat);
+            $('#longitude').val(roundedLng);
+            $('#displayLat').text(roundedLat.toFixed(6));
+            $('#displayLng').text(roundedLng.toFixed(6));
+            $('#accuracy').text('±' + acc.toFixed(2));
+
+            let distText = '';
+            let statusHtml = '';
+            let isValid = false;
+
+            if (hasSlotLocation) {
+                const userLocValid = Math.abs(roundedLat) <= 90 && Math.abs(roundedLng) <= 180 && !isNaN(roundedLat) && !isNaN(roundedLng);
+                
+                if (!userLocValid) {
+                    distText = 'Vị trí không hợp lệ';
+                    statusHtml = '<i class="fas fa-exclamation-triangle"></i> <strong>Lỗi: Vị trí không hợp lệ!</strong>';
+                    $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-danger').html(statusHtml);
+                } else {
+                    const dist = calculateDistance(slotLat, slotLng, roundedLat, roundedLng);
+                    distText = dist.toFixed(2) + ' mét';
+                    
+                    if (dist > allowedDistance) {
+                        statusHtml = '<i class="fas fa-exclamation-triangle"></i> <strong>⚠️ Cảnh báo: Ngoài phạm vi!</strong><br><small>Khoảng cách: ' + dist.toFixed(2) + 'm > ' + allowedDistance + 'm</small>';
+                        $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-warning').html(statusHtml);
+                        isValid = true;
+                    } else {
+                        statusHtml = '<i class="fas fa-check-circle"></i> <strong>✅ Vị trí hợp lệ!</strong><br><small>Khoảng cách: ' + dist.toFixed(2) + 'm ≤ ' + allowedDistance + 'm</small>';
+                        $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-success').html(statusHtml);
+                        isValid = true;
+                    }
+                }
+            } else {
+                distText = 'Lớp không có GPS';
+                statusHtml = '<i class="fas fa-check-circle"></i> <strong>✅ Đã lấy vị trí!</strong>';
+                $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-success').html(statusHtml);
+                isValid = true;
+            }
+
+            $('#distance').text(distText);
+            $('#locationInfo').slideDown();
+            if (isValid) $('#submitBtn').prop('disabled', false);
+        }
+
+        function handleLocationError(error) {
+            gpsRequestInProgress = false;
+            
+            let msg = '';
+            let detail = '';
+            let canRetry = false;
+            
+            if (error.code === 1) {
+                msg = 'Từ chối quyền truy cập GPS';
+                detail = '1️⃣ Click 🔒 bên trái URL → 2️⃣ Chọn "Cho phép" → 3️⃣ Reload trang (F5)';
+                canRetry = false;
+            } else if (error.code === 2) {
+                msg = 'Không xác định được vị trí';
+                detail = '1️⃣ Bật GPS/Location → 2️⃣ Bật WiFi → 3️⃣ Ra ngoài trời';
+                canRetry = attempts < MAX_ATTEMPTS;
+            } else if (error.code === 3) {
+                msg = 'Hết thời gian chờ';
+                detail = '1️⃣ Bật GPS → 2️⃣ Ra ngoài trời → 3️⃣ Đảm bảo WiFi/dữ liệu tốt';
+                canRetry = attempts < MAX_ATTEMPTS;
+            } else {
+                msg = 'Lỗi không xác định';
+                detail = '1️⃣ Reload trang → 2️⃣ Kiểm tra mạng → 3️⃣ Liên hệ giáo viên';
+                canRetry = attempts < MAX_ATTEMPTS;
+            }
+            
+            let html = '<i class="fas fa-exclamation-triangle"></i> <strong>' + msg + '</strong><br><small>' + detail + '</small>';
+            
+            if (attempts >= MAX_ATTEMPTS) {
+                html = '<i class="fas fa-exclamation-triangle"></i> <strong>❌ Đã thử ' + MAX_ATTEMPTS + ' lần!</strong><br><small>Liên hệ giáo viên để hỗ trợ</small>';
+                canRetry = false;
+            }
+            
+            $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-danger').html(html);
+            if (canRetry) $('#retryBtn').show();
         }
 
         function getLocation() {
+            if (gpsRequestInProgress) return;
+            if (attempts >= MAX_ATTEMPTS) {
+                $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-danger')
+                    .html('<i class="fas fa-exclamation-triangle"></i> <strong>❌ Đã thử ' + MAX_ATTEMPTS + ' lần!</strong>');
+                return;
+            }
+
             attempts++;
-            console.log('🔄 Attempt #' + attempts);
+            gpsRequestInProgress = true;
             
             $('#locationStatus')
                 .removeClass('glass-alert-danger glass-alert-success glass-alert-warning')
                 .addClass('glass-alert-info pulse')
-                .html('<i class="fas fa-spinner fa-spin"></i> Đang lấy vị trí... (Lần #' + attempts + ')<br><small>⏱️ Đợi 5-30 giây...</small>');
+                .html('<i class="fas fa-spinner fa-spin"></i> Đang lấy vị trí... (Lần #' + attempts + ')');
             
             $('#retryBtn').hide();
             
             if (!navigator.geolocation) {
-                showError({ code: 0, message: 'Trình duyệt không hỗ trợ GPS' });
+                gpsRequestInProgress = false;
+                $('#locationStatus').removeClass('glass-alert-info pulse').addClass('glass-alert-danger')
+                    .html('<i class="fas fa-exclamation-triangle"></i> <strong>Lỗi: Trình duyệt không hỗ trợ GPS</strong>');
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const acc = position.coords.accuracy;
-                    
-                    console.log('✅ Success! Lat:' + lat + ', Lng:' + lng + ', Acc:±' + acc + 'm');
-                    
-                    $('#latitude').val(lat);
-                    $('#longitude').val(lng);
-                    $('#displayLat').text(lat.toFixed(6));
-                    $('#displayLng').text(lng.toFixed(6));
-                    $('#accuracy').text('±' + acc.toFixed(2));
-
-                    let dist = 0;
-                    let distText = '';
-
-                    if (slotLat && slotLng && slotLat != 0 && slotLng != 0) {
-                        dist = calculateDistance(lat, lng, slotLat, slotLng);
-                        distText = dist.toFixed(2) + ' mét';
-                        
-                        console.log('📏 Distance: ' + dist.toFixed(2) + 'm vs ' + allowedDistance + 'm');
-                        
-                        if (dist > allowedDistance) {
-                            console.log('❌ OUT OF RANGE');
-                            $('#locationStatus').removeClass('pulse glass-alert-info').addClass('glass-alert-warning')
-                                .html('<i class="fas fa-exclamation-triangle"></i> <strong>Cảnh báo: Ngoài phạm vi</strong><br>' +
-                                      '<small>' + dist.toFixed(2) + 'm > ' + allowedDistance + 'm</small><br>' +
-                                      '<small style="color:#2d3748;font-weight:700">⚠️ Sẽ bị đánh dấu vi phạm!</small>');
-                        } else {
-                            console.log('✅ IN RANGE');
-                            $('#locationStatus').removeClass('pulse').addClass('glass-alert-success')
-                                .html('<i class="fas fa-check-circle"></i> <strong>Vị trí hợp lệ!</strong><br>' +
-                                      '<small>' + dist.toFixed(2) + 'm ≤ ' + allowedDistance + 'm</small>');
-                        }
-                    } else {
-                        distText = 'Không có dữ liệu vị trí lớp';
-                        $('#locationStatus').removeClass('pulse').addClass('glass-alert-success')
-                            .html('<i class="fas fa-check-circle"></i> Đã lấy được vị trí!');
-                    }
-
-                    $('#distance').text(distText);
-                    $('#locationInfo').slideDown();
-                    $('#submitBtn').prop('disabled', false);
-                },
-                function(error) {
-                    console.error('❌ Error #' + attempts + ':', error);
-                    
-                    let msg = '';
-                    let detail = '';
-                    let canRetry = false;
-                    
-                    if (error.code === 1) {
-                        msg = 'Từ chối quyền truy cập';
-                        detail = '1. Click 🔒 bên trái URL<br>2. Cho phép Location<br>3. Reload (F5)';
-                    } else if (error.code === 2) {
-                        msg = 'Không xác định được vị trí';
-                        detail = '1. Bật GPS<br>2. Bật WiFi<br>3. Ra gần cửa sổ<br>4. Thử lại';
-                        canRetry = attempts < 3;
-                    } else if (error.code === 3) {
-                        msg = 'Timeout (30s)';
-                        detail = '1. Bật GPS<br>2. Ra ngoài trời<br>3. Thử lại';
-                        canRetry = attempts < 3;
-                    } else {
-                        msg = 'Lỗi không xác định';
-                        detail = 'Liên hệ giáo viên';
-                        canRetry = attempts < 3;
-                    }
-                    
-                    $('#locationStatus')
-                        .removeClass('pulse glass-alert-info')
-                        .addClass('glass-alert-danger')
-                        .html('<i class="fas fa-exclamation-triangle"></i> <strong>' + msg + '</strong><br>' +
-                              '<small>' + detail + '</small>');
-                    
-                    if (canRetry) {
-                        $('#retryBtn').show();
-                    } else {
-                        $('#locationStatus').append('<br><small style="color:#dc3545;font-weight:600">❌ Đã thử ' + attempts + ' lần!</small>');
-                    }
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 30000,
-                    maximumAge: 0
-                }
+                handleLocationSuccess,
+                handleLocationError,
+                { enableHighAccuracy: true, timeout: 60000, maximumAge: 0 }
             );
         }
 
         $(document).ready(function() {
-            console.log('🚀 Page loaded - Starting GPS...');
             getLocation();
 
-            $('#retryBtn').click(function() {
-                getLocation();
-            });
+            $('#retryBtn').click(getLocation);
 
             $('#checkInForm').submit(function(e) {
                 e.preventDefault();
                 
-                if (!$('#latitude').val() || !$('#longitude').val()) {
-                    alert('⚠️ Chưa có vị trí!\n\n1. Bật GPS\n2. Cho phép Location\n3. Reload (F5)');
-                    return;
+                const lat = $('#latitude').val();
+                const lng = $('#longitude').val();
+                
+                if (!lat || !lng) {
+                    alert('⚠️ Chưa lấy được vị trí!');
+                    return false;
                 }
 
-                console.log('📤 Submitting...');
                 $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang xử lý...');
 
                 $.ajax({
@@ -298,6 +326,8 @@
                         $('#submitBtn').prop('disabled', false).html('<i class="fas fa-check-circle"></i> Xác nhận điểm danh');
                     }
                 });
+                
+                return false;
             });
         });
     </script>

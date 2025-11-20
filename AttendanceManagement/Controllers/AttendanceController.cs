@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using AttendanceManagement.Data;
 using AttendanceManagement.Models;
 using AttendanceManagement.ViewModels;
+using AttendanceManagement.Helpers;
 
 namespace AttendanceManagement.Controllers
 {
@@ -65,39 +66,25 @@ namespace AttendanceManagement.Controllers
         [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> CreateSlot(CreateAttendanceSlotViewModel model)
         {
-            Console.WriteLine($"=== CREATING SLOT - RECEIVED DATA ===");
-            Console.WriteLine($"ClassId: {model.ClassId}");
-            Console.WriteLine($"SlotName: {model.SlotName}");
-            Console.WriteLine($"SlotLatitude: {model.SlotLatitude}");
-            Console.WriteLine($"SlotLongitude: {model.SlotLongitude}");
-            Console.WriteLine($"AllowedDistanceMeters: {model.AllowedDistanceMeters}");
-            
             if (ModelState.IsValid)
             {
                 var classEntity = await _context.Classes.FindAsync(model.ClassId);
-                if (classEntity == null)
-                {
-                    return NotFound();
-                }
+                if (classEntity == null) return NotFound();
 
                 var user = await _userManager.GetUserAsync(User);
-                if (classEntity.TeacherId != user?.Id)
-                {
-                    return Forbid();
-                }
+                if (classEntity.TeacherId != user?.Id) return Forbid();
+
+                // Round coordinates to 6 decimal places for consistency
+                double roundedLat = Math.Round(model.SlotLatitude, 6);
+                double roundedLng = Math.Round(model.SlotLongitude, 6);
 
                 // Validate latitude/longitude range
-                if (Math.Abs(model.SlotLatitude) > 90 || Math.Abs(model.SlotLongitude) > 180)
+                if (Math.Abs(roundedLat) > 90 || Math.Abs(roundedLng) > 180)
                 {
-                    ModelState.AddModelError("", $"Tọa độ không hợp lệ! Latitude phải trong khoảng [-90, 90], Longitude trong khoảng [-180, 180]. Bạn đã nhập: Lat={model.SlotLatitude}, Lng={model.SlotLongitude}");
+                    ModelState.AddModelError("", $"Tọa độ không hợp lệ! Latitude phải trong khoảng [-90, 90], Longitude trong khoảng [-180, 180].");
                     ViewBag.ClassName = classEntity.ClassName;
                     return View(model);
                 }
-
-                Console.WriteLine($"=== CREATING SLOT IN DATABASE ===");
-                Console.WriteLine($"Slot Latitude: {model.SlotLatitude}");
-                Console.WriteLine($"Slot Longitude: {model.SlotLongitude}");
-                Console.WriteLine($"Allowed Distance: {model.AllowedDistanceMeters}m");
 
                 var slot = new AttendanceSlot
                 {
@@ -106,43 +93,18 @@ namespace AttendanceManagement.Controllers
                     Description = model.Description,
                     StartTime = model.StartTime,
                     EndTime = model.EndTime,
-                    SlotLatitude = model.SlotLatitude,
-                    SlotLongitude = model.SlotLongitude,
+                    SlotLatitude = roundedLat,
+                    SlotLongitude = roundedLng,
                     AllowedDistanceMeters = model.AllowedDistanceMeters,
                     IsActive = true,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTimeHelper.GetVietnamNow()
                 };
 
                 _context.AttendanceSlots.Add(slot);
                 await _context.SaveChangesAsync();
 
-                Console.WriteLine($"? Slot created successfully:");
-                Console.WriteLine($"   ID: {slot.SlotId}");
-                Console.WriteLine($"   Latitude: {slot.SlotLatitude}");
-                Console.WriteLine($"   Longitude: {slot.SlotLongitude}");
-                Console.WriteLine($"   Distance: {slot.AllowedDistanceMeters}m");
-
-                // Verify saved data
-                var savedSlot = await _context.AttendanceSlots.FindAsync(slot.SlotId);
-                if (savedSlot != null)
-                {
-                    Console.WriteLine($"=== VERIFICATION FROM DATABASE ===");
-                    Console.WriteLine($"   Saved Latitude: {savedSlot.SlotLatitude}");
-                    Console.WriteLine($"   Saved Longitude: {savedSlot.SlotLongitude}");
-                }
-
-                TempData["SuccessMessage"] = $"Tạo phiên điểm danh thành công! (Lat={model.SlotLatitude:F6}, Lng={model.SlotLongitude:F6})";
+                TempData["SuccessMessage"] = $"Tạo phiên điểm danh thành công!";
                 return RedirectToAction("Detail", "Class", new { id = model.ClassId });
-            }
-
-            // Log validation errors
-            Console.WriteLine("=== MODEL STATE ERRORS ===");
-            foreach (var modelState in ModelState.Values)
-            {
-                foreach (var error in modelState.Errors)
-                {
-                    Console.WriteLine($"Error: {error.ErrorMessage}");
-                }
             }
 
             var classForView = await _context.Classes.FindAsync(model.ClassId);
@@ -354,124 +316,68 @@ namespace AttendanceManagement.Controllers
                     .Include(s => s.Class)
                     .FirstOrDefaultAsync(s => s.SlotId == model.SlotId);
 
-                if (slot == null)
-                {
-                    return NotFound();
-                }
+                if (slot == null) return NotFound();
 
-                // Check if already checked in
-                var hasCheckedIn = await _context.AttendanceRecords
-                    .AnyAsync(ar => ar.SlotId == model.SlotId && ar.StudentId == user.Id);
-
-                if (hasCheckedIn)
-                {
+                if (await _context.AttendanceRecords.AnyAsync(ar => ar.SlotId == model.SlotId && ar.StudentId == user.Id))
                     return Json(new { success = false, message = "Bạn đã điểm danh rồi!" });
-                }
 
-                // Calculate distance from class location
+                // Round student coordinates to 6 decimal places
+                double roundedLat = Math.Round(model.Latitude, 6);
+                double roundedLng = Math.Round(model.Longitude, 6);
+
                 double distance = 0;
                 bool isFlagged = false;
-                string? flagReason = null;
+                string flagReason = null;
 
-                // Log thông tin ?? debug
-                Console.WriteLine($"=== CHECK-IN DEBUG INFO ===");
-                Console.WriteLine($"Slot ID: {slot.SlotId}");
-                Console.WriteLine($"Slot Location: Lat={slot.SlotLatitude}, Lng={slot.SlotLongitude}");
-                Console.WriteLine($"User Location: Lat={model.Latitude}, Lng={model.Longitude}");
-                Console.WriteLine($"Allowed Distance: {slot.AllowedDistanceMeters}m");
-
-                // Kiểm tra slot có tọa độ hợp lệ không
+                // Check slot has valid location
                 bool hasValidSlotLocation = slot.SlotLatitude.HasValue && slot.SlotLongitude.HasValue 
-                    && slot.SlotLatitude.Value != 0 && slot.SlotLongitude.Value != 0
                     && Math.Abs(slot.SlotLatitude.Value) <= 90 && Math.Abs(slot.SlotLongitude.Value) <= 180;
 
                 if (hasValidSlotLocation)
                 {
-                    // Kiểm tra user có tọa độ hợp lệ không
-                    bool hasValidUserLocation = model.Latitude != 0 && model.Longitude != 0
-                        && Math.Abs(model.Latitude) <= 90 && Math.Abs(model.Longitude) <= 180;
+                    bool hasValidUserLocation = Math.Abs(roundedLat) <= 90 && Math.Abs(roundedLng) <= 180 && !double.IsNaN(roundedLat) && !double.IsNaN(roundedLng);
 
                     if (hasValidUserLocation)
                     {
-                        distance = CalculateDistance(
-                            model.Latitude, model.Longitude,
-                            slot.SlotLatitude.Value, slot.SlotLongitude.Value
-                        );
+                        distance = CalculateDistance(roundedLat, roundedLng, slot.SlotLatitude.Value, slot.SlotLongitude.Value);
 
-                        Console.WriteLine($"Calculated Distance: {distance:F2}m");
-
-                        // Kiểm tra TestMode
                         var testMode = _configuration.GetValue<bool>("AppSettings:TestMode", false);
-                        var effectiveAllowedDistance = slot.AllowedDistanceMeters;
-                        
-                        if (testMode)
-                        {
-                            effectiveAllowedDistance = _configuration.GetValue<int>("AppSettings:TestModeDistanceMeters", 5000);
-                            Console.WriteLine($"TEST MODE: Allowed distance increased to {effectiveAllowedDistance}m");
-                        }
+                        var effectiveAllowedDistance = testMode 
+                            ? _configuration.GetValue<int>("AppSettings:TestModeDistanceMeters", 5000)
+                            : slot.AllowedDistanceMeters;
 
                         if (distance > effectiveAllowedDistance)
                         {
                             isFlagged = true;
                             flagReason = $"Ngoài phạm vi cho phép: {distance:F2}m (cho phép: {effectiveAllowedDistance}m)";
-                            Console.WriteLine($"? FLAGGED: {flagReason}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"? OK: Trong phạm vi ({distance:F2}m <= {effectiveAllowedDistance}m)");
                         }
                     }
                     else
                     {
-                        // User location invalid
                         isFlagged = true;
-                        flagReason = "Không lấy đượcc vị trí hợp lệ từ thiết bị";
-                        Console.WriteLine($"? WARNING: User location invalid - Lat={model.Latitude}, Lng={model.Longitude}");
+                        flagReason = "Không lấy được vị trí hợp lệ từ thiết bị";
                     }
-                }
-                else
-                {
-                    // Slot không có tọa độ - cho phép điểm danh không cần check vị trí
-                    Console.WriteLine("? WARNING: Slot không có tọa độ GPS - bỏ qua kiểm tra khoảng cách");
-                    distance = 0; // Set distance = 0 nếu không check
                 }
 
                 // Determine attendance status
-                var status = AttendanceStatus.Present;
-                var lateThresholdMinutes = 15;
-                
-                if (DateTime.Now > slot.StartTime.AddMinutes(lateThresholdMinutes))
-                {
-                    status = AttendanceStatus.Late;
-                    Console.WriteLine($"Status: Late (checked in {(DateTime.Now - slot.StartTime).TotalMinutes:F0} minutes after start)");
-                }
-                else
-                {
-                    Console.WriteLine($"Status: Present");
-                }
+                var status = DateTime.Now > slot.StartTime.AddMinutes(15) 
+                    ? AttendanceStatus.Late 
+                    : AttendanceStatus.Present;
 
-                // Get device info
+                // Get device info for duplicate detection
                 var deviceInfo = Request.Headers["User-Agent"].ToString();
                 var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
 
-                Console.WriteLine($"Device: {deviceInfo?.Substring(0, Math.Min(50, deviceInfo?.Length ?? 0))}...");
-                Console.WriteLine($"IP: {ipAddress}");
-
-                // Check for duplicate device/IP
-                var duplicateDevice = await _context.AttendanceRecords
-                    .AnyAsync(ar => ar.SlotId == model.SlotId &&
-                                   ar.StudentId != user.Id &&
-                                   (ar.DeviceInfo == deviceInfo || ar.IpAddress == ipAddress));
+                var duplicateDevice = await _context.AttendanceRecords.AnyAsync(ar => 
+                    ar.SlotId == model.SlotId && ar.StudentId != user.Id &&
+                    (ar.DeviceInfo == deviceInfo || ar.IpAddress == ipAddress));
 
                 if (duplicateDevice)
                 {
                     isFlagged = true;
-                    if (string.IsNullOrEmpty(flagReason))
-                        flagReason = "Thiết bị hoặc IP trùng với sinh viên khác";
-                    else
-                        flagReason += "; Thiết bị hoặc IP trùng với sinh viên khác";
-                    
-                    Console.WriteLine($"? FLAGGED: Duplicate device/IP detected");
+                    flagReason = string.IsNullOrEmpty(flagReason)
+                        ? "Thiết bị hoặc IP trùng với sinh viên khác"
+                        : $"{flagReason}; Thiết bị hoặc IP trùng";
                 }
 
                 var record = new AttendanceRecord
@@ -482,10 +388,10 @@ namespace AttendanceManagement.Controllers
                     StudentCode = model.StudentCode,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
-                    Latitude = model.Latitude,
-                    Longitude = model.Longitude,
+                    Latitude = roundedLat,
+                    Longitude = roundedLng,
                     DistanceFromClass = distance,
-                    CheckInTime = DateTime.UtcNow,
+                    CheckInTime = DateTimeHelper.GetVietnamNow(),
                     Status = status,
                     DeviceInfo = deviceInfo,
                     IpAddress = ipAddress,
@@ -497,37 +403,31 @@ namespace AttendanceManagement.Controllers
                 _context.AttendanceRecords.Add(record);
                 await _context.SaveChangesAsync();
 
-                Console.WriteLine($"? Attendance Record Created: ID={record.RecordId}, Distance={distance:F2}m, IsFlagged={isFlagged}");
-
                 // Add flags if needed
                 if (isFlagged)
                 {
                     if (hasValidSlotLocation && distance > slot.AllowedDistanceMeters)
-                    {
                         _context.AttendanceFlags.Add(new AttendanceFlag
                         {
                             RecordId = record.RecordId,
                             Type = FlagType.OutOfRange,
                             Reason = $"Khoảng cách: {distance:F2}m (cho phép: {slot.AllowedDistanceMeters}m)",
-                            FlaggedAt = DateTime.UtcNow
+                            FlaggedAt = DateTimeHelper.GetVietnamNow()
                         });
-                    }
 
                     if (duplicateDevice)
-                    {
                         _context.AttendanceFlags.Add(new AttendanceFlag
                         {
                             RecordId = record.RecordId,
                             Type = FlagType.DuplicateDevice,
                             Reason = "Thiết bị hoặc IP trùng với sinh viên khác",
-                            FlaggedAt = DateTime.UtcNow
+                            FlaggedAt = DateTimeHelper.GetVietnamNow()
                         });
-                    }
 
                     await _context.SaveChangesAsync();
                 }
 
-                var message = isFlagged 
+                string message = isFlagged 
                     ? $"Điểm danh thành công! Lưu ý: {flagReason}" 
                     : "Điểm danh thành công!";
 
@@ -613,7 +513,7 @@ namespace AttendanceManagement.Controllers
                     PhoneNumber = model.PhoneNumber,
                     Reason = model.Reason,
                     EvidenceUrl = evidenceUrl,
-                    RequestedAt = DateTime.UtcNow,
+                    RequestedAt = DateTimeHelper.GetVietnamNow(),
                     Status = LeaveRequestStatus.Pending
                 };
 
@@ -649,7 +549,7 @@ namespace AttendanceManagement.Controllers
             }
 
             leaveRequest.Status = status == "approved" ? LeaveRequestStatus.Approved : LeaveRequestStatus.Rejected;
-            leaveRequest.ReviewedAt = DateTime.UtcNow;
+            leaveRequest.ReviewedAt = DateTimeHelper.GetVietnamNow();
             leaveRequest.ReviewNote = note;
 
             await _context.SaveChangesAsync();
@@ -662,20 +562,18 @@ namespace AttendanceManagement.Controllers
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
             const double R = 6371000; // Earth's radius in meters
-            var dLat = ToRadians(lat2 - lat1);
-            var dLon = ToRadians(lon2 - lon1);
-
-            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                    Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
-                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-
-            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            
+            double phi1 = lat1 * Math.PI / 180;
+            double phi2 = lat2 * Math.PI / 180;
+            double deltaLat = (lat2 - lat1) * Math.PI / 180;
+            double deltaLon = (lon2 - lon1) * Math.PI / 180;
+            
+            double a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) +
+                       Math.Cos(phi1) * Math.Cos(phi2) *
+                       Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2);
+            
+            double c = 2 * Math.Asin(Math.Min(1.0, Math.Sqrt(a)));
             return R * c;
-        }
-
-        private double ToRadians(double degrees)
-        {
-            return degrees * Math.PI / 180;
         }
 
         private async Task<string> SaveFileAsync(IFormFile file, string folder)

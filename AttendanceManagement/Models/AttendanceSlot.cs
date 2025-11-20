@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AttendanceManagement.Models
@@ -27,7 +27,7 @@ namespace AttendanceManagement.Models
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // V? tr� c?a phi�n ?i?m danh (c� th? kh�c v?i v? tr� l?p h?c)
+        // Vị trí của phiên điểm danh (có thể khác với vị trí lớp học)
         public double? SlotLatitude { get; set; }
         public double? SlotLongitude { get; set; }
         public int AllowedDistanceMeters { get; set; } = 100;
