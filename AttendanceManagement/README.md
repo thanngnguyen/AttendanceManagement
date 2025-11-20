@@ -1,81 +1,81 @@
-# ?? Attendance Management System
+﻿# Attendance Management System
 
-H? th?ng qu?n l� l?p h?c v� ?i?m danh tr?c tuy?n v?i c�ng ngh? GPS, ???c x�y d?ng b?ng ASP.NET Core 8.0.
+Hệ thống quản lý lớp học và điểm danh trực tuyến với công nghệ GPS, được xây dựng bằng ASP.NET Core 8.0.
 
-## ? T�nh N?ng Ch�nh
+## Tính Năng Chính
 
-### ?? ?i?m Danh GPS
-- Sinh vi�n b?t bu?c ph?i b?t ??nh v? v� ? trong ph?m vi l?p h?c ?? ?i?m danh
-- T�nh to�n kho?ng c�ch ch�nh x�c s? d?ng c�ng th?c Haversine
-- T? ??ng ?�nh d?u vi ph?m n?u ngo�i ph?m vi cho ph�p
-- L?u l?i t?a ?? v� th?i gian ?i?m danh ch�nh x�c
+### Điểm Danh GPS
+- Sinh viên bắt buộc phải bật định vị và ở trong phạm vi lớp học để điểm danh
+- Tính toán khoảng cách chính xác sử dụng công thức Haversine
+- Tự động đánh dấu vi phạm nếu ngoài phạm vi cho phép
+- Lưu lại tọa độ và thời gian điểm danh chính xác
 
-### ??? Ph�t Hi?n Gian L?n
-H? th?ng t? ??ng ph�t hi?n:
-- ? ?i?m danh ngo�i ph?m vi cho ph�p (> 100m)
-- ? Nhi?u t�i kho?n ?i?m danh t? c�ng thi?t b?
-- ? Nhi?u t�i kho?n ?i?m danh t? c�ng IP
-- ? V? tr� b?t th??ng ho?c v� l�
+### Phát Hiện Gian Lận
+Hệ thống tự động phát hiện:
+- Điểm danh ngoài phạm vi cho phép (> 100m)
+- Nhiều tài khoản điểm danh từ cùng thiết bị
+- Nhiều tài khoản điểm danh từ cùng IP
+- Vị trí bất thường hoặc vô lý
 
-### ?? Qu?n L� L?p H?c
-- T?o v� qu?n l� nhi?u l?p h?c
-- Chia s? m� l?p cho sinh vi�n tham gia
-- Theo d�i danh s�ch th�nh vi�n
-- Th?ng k� chi ti?t v? ?i?m danh
+### Quản Lý Lớp Học
+- Tạo và quản lý nhiều lớp học
+- Chia sẻ mã lớp cho sinh viên tham gia
+- Theo dõi danh sách thành viên
+- Thống kê chi tiết về điểm danh
 
-### ?? B�i T?p & Ch?m ?i?m
-- T?o b�i t?p v?i h?n n?p
-- N?p b�i tr?c tuy?n (text ho?c file)
-- Ch?m ?i?m v� ph?n h?i
-- Theo d�i ti?n ?? n?p b�i
+### Bài Tập và Chấm Điểm
+- Tạo bài tập với hạn nộp
+- Nộp bài trực tuyến (text hoặc file)
+- Chấm điểm và phản hồi
+- Theo dõi tiến độ nộp bài
 
-### ?? Xin Ngh? Ph�p
-- Sinh vi�n g?i ??n xin ngh? k�m minh ch?ng
-- Gi�o vi�n duy?t/t? ch?i ??n
-- Ghi ch� t? gi�o vi�n
+### Xin Nghỉ Phép
+- Sinh viên gửi đơn xin nghỉ kèm minh chứng
+- Giáo viên duyệt/từ chối đơn
+- Ghi chú từ giáo viên
 
-### ?? B?ng Tin & Th?o Lu?n
-- Gi�o vi�n ??ng th�ng b�o, b�i gi?ng
-- Trao ??i v� th?o lu?n trong l?p
-- B�nh lu?n, chia s? t�i li?u
+### Bảng Tin và Thảo Luận
+- Giáo viên đăng thông báo, bài giảng
+- Trao đổi và thảo luận trong lớp
+- Bình luận, chia sẻ tài liệu
 
 ---
 
-## ??? C�ng Ngh? S? D?ng
+## Công Nghệ Sử Dụng
 
-| Th�nh Ph?n | C�ng Ngh? |
+| Thành Phần | Công Nghệ |
 |-----------|-----------|
-| **Backend** | ASP.NET Core 8.0 MVC |
-| **Database** | SQL Server 2019+ / LocalDB |
-| **ORM** | Entity Framework Core |
-| **Authentication** | ASP.NET Core Identity |
-| **Frontend** | Bootstrap 5, jQuery, Font Awesome |
-| **Geolocation** | HTML5 Geolocation API |
-| **Language** | C# 12.0 |
+| Backend | ASP.NET Core 8.0 MVC |
+| Database | SQL Server 2022 / LocalDB |
+| ORM | Entity Framework Core |
+| Authentication | ASP.NET Core Identity |
+| Frontend | Bootstrap 5, jQuery, Font Awesome |
+| Geolocation | HTML5 Geolocation API |
+| Language | C# 12.0 |
 
 ---
 
-## ?? Y�u C?u H? Th?ng
+## Yêu Cầu Hệ Thống
 
-- ? .NET 8 SDK [T?i t?i ?�y](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- ? SQL Server 2019+ ho?c SQL Server LocalDB
-- ? Visual Studio 2022 ho?c VS Code
-- ? Git (?? clone repository)
+- .NET 8 SDK [Tải tại đây](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- SQL Server 2022 hoặc SQL Server LocalDB
+- Visual Studio 2022 hoặc VS Code
+- Git (để clone repository)
 
 ---
 
-## ?? C�i ??t & Ch?y
+## Cài Đặt và Chạy
 
-### 1?? Clone Repository
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/thanngnguyen/AttendanceManagement.git
 cd AttendanceManagement
 ```
 
-### 2?? C?u H�nh Database
+### 2. Cấu Hình Database
 
-M? file `appsettings.json` v� c?p nh?t connection string:
+Mở file `appsettings.json` và cập nhật connection string:
 
 ```json
 {
@@ -88,204 +88,204 @@ M? file `appsettings.json` v� c?p nh?t connection string:
 }
 ```
 
-### 3?? Ch?y Migration
+### 3. Chạy Migration
 
-**C�ch 1: Package Manager Console (Visual Studio)**
+**Cách 1: Package Manager Console (Visual Studio)**
 ```bash
 Add-Migration InitialCreate
 Update-Database
 ```
 
-**C�ch 2: .NET CLI**
+**Cách 2: .NET CLI**
 ```bash
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-### 4?? Ch?y ?ng D?ng
+### 4. Chạy Ứng Dụng
 
 ```bash
 dotnet run
 ```
 
-Ho?c nh?n **F5** trong Visual Studio.
+Hoặc nhấn **F5** trong Visual Studio.
 
-?ng d?ng s? ch?y t?i: `https://localhost:7001`
-
----
-
-## ?? T�i Kho?n Demo
-
-H? th?ng t? ??ng t?o c�c t�i kho?n demo khi kh?i ??ng:
-
-### ?? Admin
-- **Email:** `admin@attendance.com`
-- **Password:** `Admin@123`
-- **Quy?n:** Qu?n l� to�n b? h? th?ng
-
-### ????? Gi�o Vi�n
-- **Email:** `teacher@attendance.com`
-- **Password:** `Teacher@123`
-- **Quy?n:** T?o l?p, t?o phi�n ?i?m danh, ch?m ?i?m
-
-### ????? Sinh Vi�n
-- **Email:** `student@attendance.com`
-- **Password:** `Student@123`
-- **Quy?n:** Tham gia l?p, ?i?m danh, n?p b�i
+Ứng dụng sẽ chạy tại: `https://localhost:7001`
 
 ---
 
-## ?? H??ng D?n S? D?ng
+## Tài Khoản Demo
 
-### ????? D�nh cho Gi�o Vi�n
+Hệ thống tự động tạo các tài khoản demo khi khởi động:
 
-#### 1. T?o L?p H?c
-1. ??ng nh?p v?i t�i kho?n gi�o vi�n
-2. Click **"T?o L?p H?c"** tr�n trang ch?
-3. ?i?n th�ng tin:
-   - T�n l?p
-   - M� l?p (t? ??ng)
-   - M� t?
-   - V? tr� GPS (d�ng n�t "L?y v? tr� hi?n t?i")
-   - Kho?ng c�ch cho ph�p (m?c ??nh 100m)
-4. Click **"T?o"**
+### Admin
+- Email: `admin@attendance.com`
+- Password: `Admin@123`
+- Quyền: Quản lý toàn bộ hệ thống
 
-#### 2. T?o Phi�n ?i?m Danh
-1. V�o l?p h?c
-2. Click **"T?o Phi�n ?i?m Danh"**
-3. ?i?n th�ng tin:
-   - T�n phi�n
-   - Th?i gian b?t ??u/k?t th�c
-   - V? tr� v� kho?ng c�ch cho ph�p
-4. Click **"T?o"**
+### Giáo Viên
+- Email: `teacher@attendance.com`
+- Password: `Teacher@123`
+- Quyền: Tạo lớp, tạo phiên điểm danh, chấm điểm
 
-#### 3. Theo D�i ?i?m Danh
-1. Click v�o phi�n ?i?m danh
-2. Xem danh s�ch sinh vi�n:
-   - ? ?� ?i?m danh
-   - ? ?i mu?n
-   - ?? V?ng
-3. Xem **Vi Ph?m** (ngo�i ph?m vi, tr�ng thi?t b?)
-4. Duy?t **??n Xin Ngh?**
-
-#### 4. Qu?n L� B�i T?p
-1. Click tab **"B�i T?p"**
-2. Click **"T?o B�i T?p"**
-3. ?i?n:
-   - Ti�u ??
-   - M� t?
-   - H?n n?p
-   - ?i?m t?i ?a
-4. Xem b�i n?p v� ch?m ?i?m
-
-### ????? D�nh cho Sinh Vi�n
-
-#### 1. Tham Gia L?p H?c
-1. ??ng nh?p v?i t�i kho?n sinh vi�n
-2. Click **"Tham Gia L?p"**
-3. Nh?p **M� L?p** do gi�o vi�n cung c?p
-4. Click **"Tham Gia"**
-
-#### 2. ?i?m Danh ? QUAN TR?NG
-1. **?? B?t ??nh V? tr�n thi?t b? TR??C**
-2. V�o l?p h?c > Tab **"?i?m Danh"**
-3. Click v�o phi�n ?i?m danh ?ang di?n ra
-4. Click **"?i?m Danh Ngay"**
-5. **Cho ph�p truy c?p v? tr�** khi tr�nh duy?t y�u c?u
-6. Ch? t�nh to�n kho?ng c�ch
-7. X�c nh?n ?i?m danh
-
-> ?? **L?u �:** N?u kho?ng c�ch > 100m s? b? ?�nh d?u vi ph?m
-
-#### 3. Xin Ngh? Ph�p
-1. Click **"Xin Ngh? Ph�p"**
-2. ?i?n:
-   - L� do xin ngh?
-   - ?�nh k�m minh ch?ng (n?u c�)
-3. Click **"G?i ??n"**
-4. Ch? gi�o vi�n duy?t
-
-#### 4. N?p B�i T?p
-1. Tab **"B�i T?p"** > Click b�i t?p c?n n?p
-2. Click **"N?p B�i"**
-3. ?i?n n?i dung ho?c t?i l�n file
-4. Click **"N?p"**
+### Sinh Viên
+- Email: `student@attendance.com`
+- Password: `Student@123`
+- Quyền: Tham gia lớp, điểm danh, nộp bài
 
 ---
 
-## ?? C?u Tr�c Database
+## Hướng Dẫn Sử Dụng
+
+### Dành cho Giáo Viên
+
+#### 1. Tạo Lớp Học
+1. Đăng nhập với tài khoản giáo viên
+2. Click "Tạo Lớp Học" trên trang chủ
+3. Điền thông tin:
+   - Tên lớp
+   - Mã lớp (tự động)
+   - Mô tả
+   - Vị trí GPS (dùng nút "Lấy vị trí hiện tại")
+   - Khoảng cách cho phép (mặc định 100m)
+4. Click "Tạo"
+
+#### 2. Tạo Phiên Điểm Danh
+1. Vào lớp học
+2. Click "Tạo Phiên Điểm Danh"
+3. Điền thông tin:
+   - Tên phiên
+   - Thời gian bắt đầu/kết thúc
+   - Vị trí và khoảng cách cho phép
+4. Click "Tạo"
+
+#### 3. Theo Dõi Điểm Danh
+1. Click vào phiên điểm danh
+2. Xem danh sách sinh viên:
+   - Đã điểm danh
+   - Đi muộn
+   - Vắng
+3. Xem Vi Phạm (ngoài phạm vi, trùng thiết bị)
+4. Duyệt Đơn Xin Nghỉ
+
+#### 4. Quản Lý Bài Tập
+1. Click tab "Bài Tập"
+2. Click "Tạo Bài Tập"
+3. Điền:
+   - Tiêu đề
+   - Mô tả
+   - Hạn nộp
+   - Điểm tối đa
+4. Xem bài nộp và chấm điểm
+
+### Dành cho Sinh Viên
+
+#### 1. Tham Gia Lớp Học
+1. Đăng nhập với tài khoản sinh viên
+2. Click "Tham Gia Lớp"
+3. Nhập Mã Lớp do giáo viên cung cấp
+4. Click "Tham Gia"
+
+#### 2. Điểm Danh (QUAN TRỌNG)
+1. **Bật Định Vị trên thiết bị TRƯỚC**
+2. Vào lớp học > Tab "Điểm Danh"
+3. Click vào phiên điểm danh đang diễn ra
+4. Click "Điểm Danh Ngay"
+5. **Cho phép truy cập vị trí** khi trình duyệt yêu cầu
+6. Chờ tính toán khoảng cách
+7. Xác nhận điểm danh
+
+> Lưu ý: Nếu khoảng cách > 100m sẽ bị đánh dấu vi phạm
+
+#### 3. Xin Nghỉ Phép
+1. Click "Xin Nghỉ Phép"
+2. Điền:
+   - Lý do xin nghỉ
+   - Đính kèm minh chứng (nếu có)
+3. Click "Gửi Đơn"
+4. Chờ giáo viên duyệt
+
+#### 4. Nộp Bài Tập
+1. Tab "Bài Tập" > Click bài tập cần nộp
+2. Click "Nộp Bài"
+3. Điền nội dung hoặc tải lên file
+4. Click "Nộp"
+
+---
+
+## Cấu Trúc Database
 
 ```
 AspNetUsers
-  ??? Enrollments (tham gia l?p)
-  ??? AttendanceRecords (?i?m danh)
-  ??? LeaveRequests (xin ngh?)
-  ??? Submissions (n?p b�i)
-  ??? Posts (b�i vi?t)
-  ??? Comments (b�nh lu?n)
+  ├── Enrollments (tham gia lớp)
+  ├── AttendanceRecords (điểm danh)
+  ├── LeaveRequests (xin nghỉ)
+  ├── Submissions (nộp bài)
+  ├── Posts (bài viết)
+  └── Comments (bình luận)
 
 Classes
-  ??? AttendanceSlots (phi�n ?i?m danh)
-  ??? Assignments (b�i t?p)
-  ??? ClassSessions (bu?i h?c)
-  ??? ClassMaterials (t�i li?u)
-  ??? CalendarEvents (s? ki?n)
-  ??? Posts (b�i vi?t)
+  ├── AttendanceSlots (phiên điểm danh)
+  ├── Assignments (bài tập)
+  ├── ClassSessions (buổi học)
+  ├── ClassMaterials (tài liệu)
+  ├── CalendarEvents (sự kiện)
+  └── Posts (bài viết)
 
 AttendanceRecords
-  ??? AttendanceFlags (vi ph?m)
+  └── AttendanceFlags (vi phạm)
 ```
 
 ---
 
-## ?? API Endpoints Ch�nh
+## API Endpoints Chính
 
-### ?? Account
+### Account
 ```
-POST   /Account/Register        - ??ng k�
-POST   /Account/Login           - ??ng nh?p
-POST   /Account/Logout          - ??ng xu?t
-GET    /Account/Profile         - Xem h? s?
-POST   /Account/EditProfile     - S?a h? s?
-POST   /Account/ChangePassword  - ??i m?t kh?u
-```
-
-### ?? Class
-```
-GET    /Class/Index             - Danh s�ch l?p
-GET    /Class/Create            - Form t?o l?p
-POST   /Class/Create            - T?o l?p
-GET    /Class/Detail/{id}       - Chi ti?t l?p
-POST   /Class/Join              - Tham gia l?p
-GET    /Class/Members/{id}      - Danh s�ch th�nh vi�n
+POST   /Account/Register        - Đăng ký
+POST   /Account/Login           - Đăng nhập
+POST   /Account/Logout          - Đăng xuất
+GET    /Account/Profile         - Xem hồ sơ
+POST   /Account/EditProfile     - Sửa hồ sơ
+POST   /Account/ChangePassword  - Đổi mật khẩu
 ```
 
-### ?? Attendance
+### Class
 ```
-POST   /Attendance/CreateSlot         - T?o phi�n
-GET    /Attendance/SlotDetail/{id}    - Chi ti?t phi�n
-GET    /Attendance/CheckIn/{id}       - Form ?i?m danh
-POST   /Attendance/CheckIn            - G?i ?i?m danh
-GET    /Attendance/RequestLeave/{id}  - Form xin ngh?
-POST   /Attendance/RequestLeave       - G?i ??n xin ngh?
-POST   /Attendance/ReviewLeaveRequest - Duy?t ??n
+GET    /Class/Index             - Danh sách lớp
+GET    /Class/Create            - Form tạo lớp
+POST   /Class/Create            - Tạo lớp
+GET    /Class/Detail/{id}       - Chi tiết lớp
+POST   /Class/Join              - Tham gia lớp
+GET    /Class/Members/{id}      - Danh sách thành viên
 ```
 
-### ?? Assignment
+### Attendance
 ```
-GET    /Assignment/Create             - Form t?o b�i
-POST   /Assignment/Create             - T?o b�i t?p
-GET    /Assignment/Detail/{id}        - Chi ti?t b�i
-GET    /Assignment/Submit/{id}        - Form n?p b�i
-POST   /Assignment/Submit             - N?p b�i
-POST   /Assignment/Grade/{id}         - Ch?m ?i?m
+POST   /Attendance/CreateSlot         - Tạo phiên
+GET    /Attendance/SlotDetail/{id}    - Chi tiết phiên
+GET    /Attendance/CheckIn/{id}       - Form điểm danh
+POST   /Attendance/CheckIn            - Gửi điểm danh
+GET    /Attendance/RequestLeave/{id}  - Form xin nghỉ
+POST   /Attendance/RequestLeave       - Gửi đơn xin nghỉ
+POST   /Attendance/ReviewLeaveRequest - Duyệt đơn
+```
+
+### Assignment
+```
+GET    /Assignment/Create             - Form tạo bài
+POST   /Assignment/Create             - Tạo bài tập
+GET    /Assignment/Detail/{id}        - Chi tiết bài
+GET    /Assignment/Submit/{id}        - Form nộp bài
+POST   /Assignment/Submit             - Nộp bài
+POST   /Assignment/Grade/{id}         - Chấm điểm
 ```
 
 ---
 
-## ?? C?u H�nh N�ng Cao
+## Cấu Hình Nâng Cao
 
-### Test Mode (T?ng ph?m vi ?i?m danh)
+### Test Mode (Tăng phạm vi điểm danh)
 
 **appsettings.json:**
 ```json
@@ -297,53 +297,51 @@ POST   /Assignment/Grade/{id}         - Ch?m ?i?m
 }
 ```
 
-Khi b?t, kho?ng c�ch cho ph�p s? t? ??ng t?ng l�n 5000m.
+Khi bật, khoảng cách cho phép sẽ tự động tăng lên 5000m.
 
-### Thay ??i Timezone
+### Thay Đổi Timezone
 
-M?c ??nh: **SE Asia Standard Time (UTC+7)** - Vi?t Nam
+Mặc định: **SE Asia Standard Time (UTC+7)** - Việt Nam
 
-?? ??i, s?a trong `Helpers/DateTimeHelper.cs`:
+Để đổi, sửa trong `Helpers/DateTimeHelper.cs`:
 ```csharp
 TimeZoneInfo.FindSystemTimeZoneById("Your-Timezone-ID")
 ```
 
-### Thay ??i Kho?ng C�ch M?c ??nh
+### Thay Đổi Khoảng Cách Mặc Định
 
 Trong `Models/Class.cs`:
 ```csharp
-public int AllowedDistanceMeters { get; set; } = 100; // ??i 100 th�nh gi� tr? mong mu?n
+public int AllowedDistanceMeters { get; set; } = 100; // Đổi 100 thành giá trị mong muốn
 ```
 
 ---
 
-## ?? B?o M?t
+## Bảo Mật
 
-? **C�c bi?n ph�p b?o m?t:**
-- M?t kh?u hash b?ng **ASP.NET Core Identity**
-- **Anti-Forgery Token** cho t?t c? form
-- **Role-based Access Control (RBAC)**
-- **HTTPS required** cho Geolocation
-- **Input validation** ?? tr�nh SQL Injection, XSS
-- **CORS policy** ???c c?u h�nh
+Các biện pháp bảo mật:
+- Mật khẩu hash bằng ASP.NET Core Identity
+- Anti-Forgery Token cho tất cả form
+- Role-based Access Control (RBAC)
+- HTTPS required cho Geolocation
+- Input validation để tránh SQL Injection, XSS
+- CORS policy được cấu hình
 
 ---
 
-## ?? Troubleshooting
+## Troubleshooting
 
-### ? L?i kh�ng l?y ???c v? tr� GPS
+### Lỗi không lấy được vị trí GPS
 
-**Nguy�n nh�n & C�ch Kh?c Ph?c:**
-
-| V?n ?? | Gi?i Ph�p |
+| Vấn Đề | Giải Pháp |
 |--------|----------|
-| Tr�nh duy?t kh�ng h? tr? | D�ng Chrome, Firefox, Safari, Edge |
-| Ch?a cho ph�p | Click ?? tr�n thanh URL ? Cho ph�p Location |
-| Kh�ng b?t ??nh v? thi?t b? | B?t GPS tr�n ?i?n tho?i/m�y t�nh |
-| ? trong nh� | Ra ngo�i tr?i ?? t�n hi?u t?t h?n |
-| S? d?ng HTTP (kh�ng HTTPS) | Geolocation y�u c?u HTTPS |
+| Trình duyệt không hỗ trợ | Dùng Chrome, Firefox, Safari, Edge |
+| Chưa cho phép | Click khóa trên thanh URL → Cho phép Location |
+| Không bật định vị thiết bị | Bật GPS trên điện thoại/máy tính |
+| Ở trong nhà | Ra ngoài trời để tín hiệu tốt hơn |
+| Sử dụng HTTP (không HTTPS) | Geolocation yêu cầu HTTPS |
 
-### ? L?i Migration
+### Lỗi Migration
 
 ```bash
 # Reset database
@@ -353,63 +351,63 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-### ? L?i Connection String
+### Lỗi Connection String
 
 ```bash
-# Ki?m tra SQL Server
+# Kiểm tra SQL Server
 sqlcmd -S (localdb)\mssqllocaldb
 ```
 
-N?u l?i, c�i l?i SQL Server LocalDB:
+Nếu lỗi, cài lại SQL Server LocalDB:
 ```bash
-# G? c�i
+# Gỡ cài
 sqllocaldb stop mssqllocaldb
 sqllocaldb delete mssqllocaldb
 
-# C�i l?i
+# Cài lại
 sqllocaldb create mssqllocaldb
 sqllocaldb start mssqllocaldb
 ```
 
 ---
 
-## ?? C?i Ti?n Trong T??ng Lai
+## Cải Tiến Trong Tương Lai
 
-- [ ] ?? Th�ng b�o real-time (SignalR)
-- [ ] ?? Mobile app (Xamarin/MAUI)
-- [ ] ?? T�ch h?p video call (Zoom/Teams)
-- [ ] ?? Dashboard & b�o c�o n�ng cao
-- [ ] ?? AI ph�t hi?n gian l?n
-- [ ] ?? ?a ng�n ng? (i18n)
-- [ ] ?? Export b�o c�o Excel/PDF
-
----
-
-## ?? License
-
-MIT License - M� ngu?n m?, t? do s? d?ng v� ph�t tri?n
+- Thông báo real-time (SignalR)
+- Mobile app (Xamarin/MAUI)
+- Tích hợp video call (Zoom/Teams)
+- Dashboard và báo cáo nâng cao
+- AI phát hiện gian lận
+- Đa ngôn ngữ (i18n)
+- Export báo cáo Excel/PDF
 
 ---
 
-## ????? T�c Gi?
+## License
 
-**Th?ng Nguy?n** - Developer
-
-?? Email: thang.nguyen@example.com  
-?? GitHub: [@thanngnguyen](https://github.com/thanngnguyen)  
-?? Repository: [AttendanceManagement](https://github.com/thanngnguyen/AttendanceManagement)
+MIT License - Mã nguồn mở, tự do sử dụng và phát triển
 
 ---
 
-## ?? H? Tr? & Ph?n H?i
+## Tác Giả
 
-- ?? Issues: [GitHub Issues](https://github.com/thanngnguyen/AttendanceManagement/issues)
-- ?? Discussions: [GitHub Discussions](https://github.com/thanngnguyen/AttendanceManagement/discussions)
-- ?? Email: thang.nguyen@example.com
+Thắng Nguyễn - Developer
+
+Email: thang.nguyen@example.com
+GitHub: [@thanngnguyen](https://github.com/thanngnguyen)
+Repository: [AttendanceManagement](https://github.com/thanngnguyen/AttendanceManagement)
 
 ---
 
-## ?? C?m ?n
+## Hỗ Trợ và Phản Hồi
+
+- Issues: [GitHub Issues](https://github.com/thanngnguyen/AttendanceManagement/issues)
+- Discussions: [GitHub Discussions](https://github.com/thanngnguyen/AttendanceManagement/discussions)
+- Email: thang.nguyen@example.com
+
+---
+
+## Cảm Ơn
 
 - Bootstrap, jQuery, Font Awesome
 - Microsoft .NET Foundation
@@ -418,4 +416,4 @@ MIT License - M� ngu?n m?, t? do s? d?ng v� ph�t tri?n
 
 ---
 
-**Ch�c b?n s? d?ng h? th?ng vui v?! ??**
+**Chúc bạn sử dụng hệ thống vui vẻ!**
