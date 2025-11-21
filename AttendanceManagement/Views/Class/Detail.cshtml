@@ -321,67 +321,8 @@
 
             <!-- Sidebar -->
             <div class="col-lg-4">
-                <!-- Class Info -->
-                <div class="glass-card mb-3">
-                    <div class="glass-header">
-                        <h6 class="mb-0"><i class="fas fa-info-circle icon-glow"></i> Thông tin lớp học</h6>
-                    </div>
-                    <div class="glass-body">
-                        <label class="form-label text-white mb-2">Mã lớp:</label>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control glass-input" value="@Model.Class.ClassCode" id="classCode" readonly>
-                            <button class="btn btn-gradient-info" type="button" onclick="copyClassCode()">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-
-                        @if (!string.IsNullOrEmpty(Model.Class.Description))
-                        {
-                            <div class="glass-box mb-3">
-                                <strong class="text-white">Mô tả:</strong>
-                                <p class="text-glass-muted mb-0 mt-2">@Model.Class.Description</p>
-                            </div>
-                        }
-
-                        <div class="glass-divider"></div>
-
-                        <div class="glass-box mb-2">
-                            <i class="fas fa-users"></i> <strong>Thành viên:</strong> @Model.TotalStudents sinh viên
-                        </div>
-                        <div class="glass-box">
-                            <i class="fas fa-calendar-plus"></i> <strong>Tạo ngày:</strong> @Model.Class.CreatedAt.ToString("dd/MM/yyyy")
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                @if (Model.IsTeacher)
-                {
-                    <div class="glass-card mb-3">
-                        <div class="glass-header">
-                            <h6 class="mb-0"><i class="fas fa-bolt icon-glow"></i> Hành động nhanh</h6>
-                        </div>
-                        <div class="glass-body">
-                            <div class="d-grid gap-2">
-                                <a asp-controller="Attendance" asp-action="CreateSlot" asp-route-classId="@Model.Class.ClassId" 
-                                   class="btn btn-gradient-primary">
-                                    <i class="fas fa-clipboard-check"></i> Tạo phiên điểm danh
-                                </a>
-                                <a asp-controller="Assignment" asp-action="Create" asp-route-classId="@Model.Class.ClassId" 
-                                   class="btn btn-gradient-success">
-                                    <i class="fas fa-tasks"></i> Tạo bài tập
-                                </a>
-                                <a asp-action="Members" asp-route-id="@Model.Class.ClassId" 
-                                   class="btn btn-gradient-info">
-                                    <i class="fas fa-users"></i> Quản lý thành viên
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                }
-
                 <!-- Upcoming -->
-                <div class="glass-card">
+                <div class="glass-card mb-3">
                     <div class="glass-header">
                         <h6 class="mb-0"><i class="fas fa-bell icon-glow"></i> Sắp tới</h6>
                     </div>
@@ -416,6 +357,65 @@
                                 </div>
                             }
                         }
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                @if (Model.IsTeacher)
+                {
+                    <div class="glass-card mb-3">
+                        <div class="glass-header">
+                            <h6 class="mb-0"><i class="fas fa-bolt icon-glow"></i> Hành động nhanh</h6>
+                        </div>
+                        <div class="glass-body">
+                            <div class="d-grid gap-2">
+                                <a asp-controller="Attendance" asp-action="CreateSlot" asp-route-classId="@Model.Class.ClassId"
+                                   class="btn btn-gradient-primary">
+                                    <i class="fas fa-clipboard-check"></i> Tạo phiên điểm danh
+                                </a>
+                                <a asp-controller="Assignment" asp-action="Create" asp-route-classId="@Model.Class.ClassId"
+                                   class="btn btn-gradient-success">
+                                    <i class="fas fa-tasks"></i> Tạo bài tập
+                                </a>
+                                <a asp-action="Members" asp-route-id="@Model.Class.ClassId"
+                                   class="btn btn-gradient-info">
+                                    <i class="fas fa-users"></i> Quản lý thành viên
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Class Info -->
+                <div class="glass-card">
+                    <div class="glass-header">
+                        <h6 class="mb-0"><i class="fas fa-info-circle icon-glow"></i> Thông tin lớp học</h6>
+                    </div>
+                    <div class="glass-body">
+                        <label class="form-label text-white mb-2">Mã lớp:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control glass-input" value="@Model.Class.ClassCode" id="classCode" readonly>
+                            <button class="btn btn-gradient-info" type="button" onclick="copyClassCode()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Class.Description))
+                        {
+                            <div class="glass-box mb-3">
+                                <strong class="text-white">Mô tả:</strong>
+                                <p class="text-glass-muted mb-0 mt-2">@Model.Class.Description</p>
+                            </div>
+                        }
+
+                        <div class="glass-divider"></div>
+
+                        <div class="glass-box mb-2">
+                            <i class="fas fa-users"></i> <strong>Thành viên:</strong> @Model.TotalStudents sinh viên
+                        </div>
+                        <div class="glass-box">
+                            <i class="fas fa-calendar-plus"></i> <strong>Tạo ngày:</strong> @Model.Class.CreatedAt.ToString("dd/MM/yyyy")
+                        </div>
                     </div>
                 </div>
             </div>

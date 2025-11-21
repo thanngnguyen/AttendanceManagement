@@ -27,6 +27,7 @@
     top: -100px;
     right: -100px;
     animation: float 20s infinite ease-in-out;
+    z-index: -1;
 }
 
 .glass-bg-pink::after {
@@ -39,6 +40,7 @@
     bottom: -100px;
     left: -100px;
     animation: float 15s infinite ease-in-out reverse;
+    z-index: -1;
 }
 
 /* Purple Lavender - Fresh & Modern */
