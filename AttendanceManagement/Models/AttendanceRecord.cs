@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AttendanceManagement.Models
@@ -36,20 +36,20 @@ namespace AttendanceManagement.Models
         [StringLength(20)]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        // V? tr� ?i?m danh
+        // Vị trí điểm danh
         [Required]
         public double Latitude { get; set; }
 
         [Required]
         public double Longitude { get; set; }
 
-        public double DistanceFromClass { get; set; } // Kho?ng c�ch t? v? tr� l?p h?c (m�t)
+        public double DistanceFromClass { get; set; } // Khoảng cách từ vị trí lớp học (mét)
 
         public DateTime CheckInTime { get; set; } = DateTime.UtcNow;
 
         public AttendanceStatus Status { get; set; } = AttendanceStatus.Present;
 
-        // Th�ng tin thi?t b? ?? ph�t hi?n gian l?n
+        // Thông tin thiết bị để phát hiện gian lận
         [StringLength(500)]
         public string? DeviceInfo { get; set; }
 
@@ -59,7 +59,7 @@ namespace AttendanceManagement.Models
         [StringLength(200)]
         public string? UserAgent { get; set; }
 
-        // Flag vi ph?m
+        // Flag vi phạm
         public bool IsFlagged { get; set; } = false;
 
         [StringLength(500)]
@@ -70,9 +70,9 @@ namespace AttendanceManagement.Models
 
     public enum AttendanceStatus
     {
-        Present = 0,      // C� m?t
-        Late = 1,         // ?i mu?n
-        Excused = 2,      // Ngh? c� ph�p
-        Absent = 3        // V?ng m?t
+        Present = 0,      // Có mặt
+        Late = 1,         // đi muộn
+        Excused = 2,      // Nghỉ có phép
+        Absent = 3        // Vắng mặt
     }
 }

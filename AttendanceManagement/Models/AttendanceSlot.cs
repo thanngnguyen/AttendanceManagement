@@ -32,7 +32,6 @@ namespace AttendanceManagement.Models
         public double? SlotLongitude { get; set; }
         public int AllowedDistanceMeters { get; set; } = 100;
 
-        // Navigation Properties
         public virtual ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
         public virtual ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
     }

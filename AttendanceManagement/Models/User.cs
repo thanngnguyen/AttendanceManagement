@@ -10,7 +10,7 @@ namespace AttendanceManagement.Models
         public string FullName { get; set; } = string.Empty;
 
         [StringLength(20)]
-        public string? StudentId { get; set; } // Mã sinh viên (null cho giáo viên)
+        public string? StudentId { get; set; }
 
         [StringLength(20)]
         public string? PhoneNumber { get; set; }
@@ -21,12 +21,11 @@ namespace AttendanceManagement.Models
         public string? ProfileImageUrl { get; set; }
 
         [StringLength(500)]
-        public string? Bio { get; set; } // Gi?i thi?u b?n thân / Thành tích
+        public string? Bio { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginAt { get; set; }
 
-        // Navigation Properties
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<Class> TeachingClasses { get; set; } = new List<Class>();
         public virtual ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();

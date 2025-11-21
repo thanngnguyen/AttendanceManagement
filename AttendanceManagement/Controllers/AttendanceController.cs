@@ -74,11 +74,11 @@ namespace AttendanceManagement.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 if (classEntity.TeacherId != user?.Id) return Forbid();
 
-                // Round coordinates to 6 decimal places for consistency
+                // Làm tròn tọa độ đến 6 chữ số thập phân để đảm bảo tính nhất quán
                 double roundedLat = Math.Round(model.SlotLatitude, 6);
                 double roundedLng = Math.Round(model.SlotLongitude, 6);
 
-                // Validate latitude/longitude range
+                // Xác thực phạm vi vĩ độ/kinh độ
                 if (Math.Abs(roundedLat) > 90 || Math.Abs(roundedLng) > 180)
                 {
                     ModelState.AddModelError("", $"Tọa độ không hợp lệ! Latitude phải trong khoảng [-90, 90], Longitude trong khoảng [-180, 180].");
@@ -321,7 +321,7 @@ namespace AttendanceManagement.Controllers
                 if (await _context.AttendanceRecords.AnyAsync(ar => ar.SlotId == model.SlotId && ar.StudentId == user.Id))
                     return Json(new { success = false, message = "Bạn đã điểm danh rồi!" });
 
-                // Round student coordinates to 6 decimal places
+                // Làm tròn tọa độ đến 6 chữ số thập phân để đảm bảo tính nhất quán
                 double roundedLat = Math.Round(model.Latitude, 6);
                 double roundedLng = Math.Round(model.Longitude, 6);
 
@@ -329,7 +329,7 @@ namespace AttendanceManagement.Controllers
                 bool isFlagged = false;
                 string flagReason = null;
 
-                // Check slot has valid location
+                // Kiểm tra vị trí có vị trí hợp lệ
                 bool hasValidSlotLocation = slot.SlotLatitude.HasValue && slot.SlotLongitude.HasValue 
                     && Math.Abs(slot.SlotLatitude.Value) <= 90 && Math.Abs(slot.SlotLongitude.Value) <= 180;
 
@@ -359,12 +359,12 @@ namespace AttendanceManagement.Controllers
                     }
                 }
 
-                // Determine attendance status
+                // Xác định tình trạng tham gia
                 var status = DateTime.Now > slot.StartTime.AddMinutes(15) 
                     ? AttendanceStatus.Late 
                     : AttendanceStatus.Present;
 
-                // Get device info for duplicate detection
+                // Nhận thông tin thiết bị để phát hiện sự trùng lặp
                 var deviceInfo = Request.Headers["User-Agent"].ToString();
                 var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
 
@@ -403,7 +403,7 @@ namespace AttendanceManagement.Controllers
                 _context.AttendanceRecords.Add(record);
                 await _context.SaveChangesAsync();
 
-                // Add flags if needed
+                // Thêm flag nếu cần
                 if (isFlagged)
                 {
                     if (hasValidSlotLocation && distance > slot.AllowedDistanceMeters)
@@ -452,7 +452,7 @@ namespace AttendanceManagement.Controllers
                 return NotFound();
             }
 
-            // Check if already requested
+            // Kiểm tra xem đã được yêu cầu chưa
             var hasRequested = await _context.LeaveRequests
                 .AnyAsync(lr => lr.SlotId == id && lr.StudentId == user.Id);
 
@@ -487,7 +487,7 @@ namespace AttendanceManagement.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 if (user == null) return NotFound();
 
-                // Check if already requested
+                // Kiểm tra xem đã được yêu cầu chưa
                 var hasRequested = await _context.LeaveRequests
                     .AnyAsync(lr => lr.SlotId == model.SlotId && lr.StudentId == user.Id);
 
@@ -558,11 +558,10 @@ namespace AttendanceManagement.Controllers
             return RedirectToAction(nameof(SlotDetail), new { id = leaveRequest.SlotId });
         }
 
-        // Helper Methods
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
-            const double R = 6371000; // Earth's radius in meters
-            
+            const double R = 6371000; // bán kính trái đất
+
             double phi1 = lat1 * Math.PI / 180;
             double phi2 = lat2 * Math.PI / 180;
             double deltaLat = (lat2 - lat1) * Math.PI / 180;

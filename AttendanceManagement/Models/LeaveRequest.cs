@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AttendanceManagement.Models
@@ -41,7 +41,7 @@ namespace AttendanceManagement.Models
         public string Reason { get; set; } = string.Empty;
 
         [StringLength(500)]
-        public string? EvidenceUrl { get; set; } // URL file minh ch?ng
+        public string? EvidenceUrl { get; set; } // URL file minh chứng
 
         public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
 
@@ -55,8 +55,8 @@ namespace AttendanceManagement.Models
 
     public enum LeaveRequestStatus
     {
-        Pending = 0,    // Ch? duy?t
-        Approved = 1,   // ?� duy?t
-        Rejected = 2    // T? ch?i
+        Pending = 0,    // Chờ duyệt
+        Approved = 1,   // Đã duyệt
+        Rejected = 2    // Từ chối
     }
 }

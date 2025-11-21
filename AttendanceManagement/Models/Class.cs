@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AttendanceManagement.Models
@@ -13,7 +13,7 @@ namespace AttendanceManagement.Models
         public string ClassName { get; set; } = string.Empty;
 
         [StringLength(20)]
-        public string ClassCode { get; set; } = string.Empty; // M� l?p ?? sinh vi�n tham gia
+        public string ClassCode { get; set; } = string.Empty;
 
         [StringLength(500)]
         public string? Description { get; set; }
@@ -36,10 +36,10 @@ namespace AttendanceManagement.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
 
-        // V? tr� l?p h?c (?? ki?m tra ?i?m danh)
+        // Vị trí lớp học (để kiểm tra điểm danh)
         public double? ClassLatitude { get; set; }
         public double? ClassLongitude { get; set; }
-        public int AllowedDistanceMeters { get; set; } = 100; // Kho?ng c�ch cho ph�p (m?c ??nh 100m)
+        public int AllowedDistanceMeters { get; set; } = 100; // Khoảng cách cho phép (mặc định 100m)
 
         // Navigation Properties
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();

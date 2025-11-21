@@ -32,7 +32,6 @@ namespace AttendanceManagement.Models
 
         public PostType Type { get; set; } = PostType.Announcement;
 
-        // Navigation Properties
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 

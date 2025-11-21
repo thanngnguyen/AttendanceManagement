@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AttendanceManagement.Models
@@ -30,10 +30,10 @@ namespace AttendanceManagement.Models
 
     public enum FlagType
     {
-        OutOfRange = 0,           // Ngo�i ph?m vi cho ph�p
-        DuplicateDevice = 1,      // C�ng thi?t b? ?i?m danh nhi?u t�i kho?n
-        SuspiciousLocation = 2,   // V? tr� ?�ng ng?
-        DuplicateIpAddress = 3,   // C�ng IP ?i?m danh nhi?u t�i kho?n
+        OutOfRange = 0,           // Ngoài phạm vi cho phép
+        DuplicateDevice = 1,      // Cùng thiết bị điểm danh nhiều tài khoản
+        SuspiciousLocation = 2,   // Vị trí đáng ngờ
+        DuplicateIpAddress = 3,   // Cùng IP điểm danh nhiều tài khoản
         Other = 99
     }
 }

@@ -102,7 +102,7 @@ namespace AttendanceManagement.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, model.Role);
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("Người dùng đã tạo một tài khoản mới bằng mật khẩu.");
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
@@ -122,7 +122,7 @@ namespace AttendanceManagement.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
+            _logger.LogInformation("Người dùng đã đăng xuất.");
             return RedirectToAction("Index", "Home");
         }
 
@@ -286,7 +286,7 @@ namespace AttendanceManagement.Controllers
             if (result.Succeeded)
             {
                 await _signInManager.RefreshSignInAsync(user);
-                _logger.LogInformation("User changed their password successfully.");
+                _logger.LogInformation("Người dùng đã thay đổi mật khẩu thành công.");
                 TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
                 return RedirectToAction(nameof(Profile));
             }
