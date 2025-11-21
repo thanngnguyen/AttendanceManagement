@@ -62,6 +62,14 @@ namespace AttendanceManagement.Controllers
                     {
                         return Redirect(returnUrl);
                     }
+                    
+                    // ✅ Redirect Admin tới Dashboard
+                    if (user.Role == UserRole.Admin)
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                    
+                    // ✅ Redirect Teacher/Student tới Home
                     return RedirectToAction("Index", "Home");
                 }
                 else

@@ -1,0 +1,91 @@
+﻿@model EditUserViewModel
+@{
+    ViewData["Title"] = "Chỉnh Sửa Người Dùng";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>Chỉnh Sửa Người Dùng</h1>
+        <small>Cập nhật thông tin</small>
+    </div>
+    <div class="topbar-actions">
+        <a asp-action="Users" class="topbar-action-btn">
+            <i class="fas fa-arrow-left"></i> Quay Lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="glass-card">
+            <div class="glass-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-edit icon-glow"></i> Thông Tin Cá Nhân
+                </h5>
+            </div>
+
+            <div class="glass-body">
+                <form asp-action="EditUser" method="post">
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label text-white">Họ và Tên</label>
+                        <input asp-for="FullName" class="form-control glass-input" placeholder="Nhập họ và tên" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label text-white">Email</label>
+                        <input asp-for="Email" type="email" class="form-control glass-input" placeholder="Nhập email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label text-white">Số Điện Thoại</label>
+                        <input asp-for="PhoneNumber" class="form-control glass-input" placeholder="Nhập số điện thoại" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="StudentId" class="form-label text-white">Mã Sinh Viên</label>
+                        <input asp-for="StudentId" class="form-control glass-input" placeholder="Nhập mã sinh viên (nếu có)" />
+                        <span asp-validation-for="StudentId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Bio" class="form-label text-white">Bio</label>
+                        <textarea asp-for="Bio" class="form-control glass-input" rows="3" placeholder="Nhập thông tin tiểu sử"></textarea>
+                        <span asp-validation-for="Bio" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Role" class="form-label text-white">Vai Trò</label>
+                        <select asp-for="Role" class="form-control glass-input">
+                            <option value="@UserRole.Student">Sinh Viên</option>
+                            <option value="@UserRole.Teacher">Giáo Viên</option>
+                            <option value="@UserRole.Admin">Admin</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger small"></span>
+                    </div>
+
+                    <div class="glass-alert-info mb-4">
+                        <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong> Thay đổi vai trò sẽ cập nhật quyền truy cập của người dùng
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-gradient-primary">
+                            <i class="fas fa-save"></i> Lưu Thay Đổi
+                        </button>
+                        <a asp-action="Users" class="btn btn-gradient-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

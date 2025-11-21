@@ -1,0 +1,97 @@
+﻿@model List<AttendanceFlagSummary>
+@{
+    ViewData["Title"] = "Quản Lý Vi Phạm";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>Quản Lý Vi Phạm</h1>
+        <small>Tổng: @ViewBag.TotalCount vi phạm</small>
+    </div>
+    <div class="topbar-actions">
+        <a asp-action="Flags" class="topbar-action-btn">
+            <i class="fas fa-sync-alt"></i> Làm Mới
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="glass-header">
+        <h5 class="mb-0">
+            <i class="fas fa-exclamation-triangle icon-glow"></i> Vi Phạm Điểm Danh
+        </h5>
+    </div>
+
+    <div class="glass-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table glass-table">
+                <thead>
+                    <tr>
+                        <th>Sinh Viên</th>
+                        <th>Lớp</th>
+                        <th>Phiên</th>
+                        <th>Loại Vi Phạm</th>
+                        <th>Lý Do</th>
+                        <th>Ngày</th>
+                        <th>Trạng Thái</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var flag in Model)
+                    {
+                        <tr style="background: rgba(239, 68, 68, 0.1);">
+                            <td>
+                                <strong>@flag.StudentName</strong>
+                                <br />
+                                <small class="text-glass-muted">@flag.StudentCode</small>
+                            </td>
+                            <td>@flag.ClassName</td>
+                            <td>@flag.SlotName</td>
+                            <td>
+                                <span class="badge @(flag.Type == FlagType.OutOfRange ? "bg-danger" : flag.Type == FlagType.DuplicateDevice ? "bg-warning" : "bg-info")">
+                                    @flag.Type.ToString()
+                                </span>
+                            </td>
+                            <td>
+                                <small title="@flag.Reason">@flag.Reason.Substring(0, Math.Min(40, flag.Reason.Length))...</small>
+                            </td>
+                            <td>@flag.FlaggedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <span class="badge @(flag.IsResolved ? "bg-success" : "bg-warning")">
+                                    @(flag.IsResolved ? "Đã Giải Quyết" : "Chưa Giải Quyết")
+                                </span>
+                            </td>
+                            <td>
+                                <form asp-action="ResolveFlag" method="post" class="d-inline">
+                                    <input type="hidden" name="flagId" value="@flag.FlagId" />
+                                    <button type="submit" class="btn btn-gradient-@(flag.IsResolved ? "info" : "success") btn-sm">
+                                        <i class="fas fa-flag">@(flag.IsResolved ? "undo" : "check")</i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Flags" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>

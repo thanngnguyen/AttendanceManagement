@@ -1,0 +1,270 @@
+﻿@model ClassManagementViewModel
+@{
+    ViewData["Title"] = $"Chi Tiết - {Model.ClassName}";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>@Model.ClassName</h1>
+        <small>Mã Lớp: @Model.ClassCode | Giáo Viên: @Model.TeacherName</small>
+    </div>
+    <div class="topbar-actions">
+        <a asp-action="Classes" class="topbar-action-btn">
+            <i class="fas fa-arrow-left"></i> Quay Lại
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Sinh Viên</h6>
+                <h2 class="text-white mb-0">@Model.StudentCount</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Phiên Điểm Danh</h6>
+                <h2 class="text-white mb-0">@Model.SlotCount</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Trạng Thái</h6>
+                <h6 class="text-white mb-0">
+                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                        @(Model.IsActive ? "Hoạt Động" : "Tạm Dừng")
+                    </span>
+                </h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Ngày Tạo</h6>
+                <h6 class="text-white mb-0">@Model.CreatedAt.ToString("dd/MM/yyyy")</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Class Info -->
+    <div class="col-lg-4 mb-4">
+        <div class="glass-card">
+            <div class="glass-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle icon-glow"></i> Thông Tin Lớp
+                </h5>
+            </div>
+            <div class="glass-body">
+                <div class="glass-box mb-2">
+                    <strong>Tên Lớp:</strong> @Model.ClassName
+                </div>
+                <div class="glass-box mb-2">
+                    <strong>Mã Lớp:</strong> @Model.ClassCode
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Subject))
+                {
+                    <div class="glass-box mb-2">
+                        <strong>Môn Học:</strong> @Model.Subject
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Room))
+                {
+                    <div class="glass-box mb-2">
+                        <strong>Phòng Học:</strong> @Model.Room
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="glass-box mb-2">
+                        <strong>Mô Tả:</strong> @Model.Description
+                    </div>
+                }
+                <div class="glass-box mb-2">
+                    <strong>Giáo Viên:</strong> @Model.TeacherName
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Students List -->
+    <div class="col-lg-8 mb-4">
+        <div class="glass-card">
+            <div class="glass-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users-class icon-glow"></i> Danh Sách Sinh Viên (@ViewBag.Students.Count)
+                </h5>
+            </div>
+            <div class="glass-body">
+                @if (ViewBag.Students != null && ViewBag.Students.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table glass-table">
+                            <thead>
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Mã SV</th>
+                                    <th>Email</th>
+                                    <th>Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var student in ViewBag.Students)
+                                {
+                                    <tr>
+                                        <td><strong>@student.FullName</strong></td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(student.StudentId))
+                                            {
+                                                <span class="badge bg-info">@student.StudentId</span>
+                                            }
+                                        </td>
+                                        <td>@student.Email</td>
+                                        <td>
+                                            <a asp-controller="Admin" asp-action="UserDetail" asp-route-id="@student.Id" 
+                                               class="btn btn-gradient-info btn-sm">
+                                                <i class="fas fa-eye">Xem</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="glass-alert-info">
+                        Lớp này chưa có sinh viên
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slots -->
+<div class="glass-card mb-4">
+    <div class="glass-header">
+        <h5 class="mb-0">
+            <i class="fas fa-schedule icon-glow"></i> Phiên Điểm Danh (@ViewBag.Slots.Count)
+        </h5>
+    </div>
+    <div class="glass-body">
+        @if (ViewBag.Slots != null && ViewBag.Slots.Count > 0)
+        {
+            var allSlots = ((List<AttendanceSlot>)ViewBag.Slots).OrderByDescending(s => s.StartTime).ToList();
+            var pageSize = 5;
+            var currentPage = (int)(ViewBag.CurrentSlotsPage ?? 1);
+            var totalPages = (int)Math.Ceiling((double)allSlots.Count / pageSize);
+            var paginatedSlots = allSlots.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+            var isFirstPage = currentPage <= 1;
+            var isLastPage = currentPage >= totalPages;
+            
+            <div class="table-responsive">
+                <table class="table glass-table">
+                    <thead>
+                        <tr>
+                            <th>Tên Phiên</th>
+                            <th>Thời Gian Bắt Đầu</th>
+                            <th>Thời Gian Kết Thúc</th>
+                            <th>Trạng Thái</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var slot in paginatedSlots)
+                        {
+                            <tr>
+                                <td><strong>@slot.SlotName</strong></td>
+                                <td>@slot.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@slot.EndTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <span class="badge @(slot.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(slot.IsActive ? "Hoạt Động" : "Tạm Dừng")
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-controller="Attendance" asp-action="SlotDetail" asp-route-id="@slot.SlotId" 
+                                       class="btn btn-gradient-info btn-sm">
+                                        <i class="fas fa-eye"></i> Chi Tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <nav aria-label="Page navigation" class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous Button -->
+                        <li class="page-item @(isFirstPage ? "disabled" : "")">
+                            @if (isFirstPage)
+                            {
+                                <span class="page-link">
+                                    <i class="fas fa-chevron-left"></i> Trước
+                                </span>
+                            }
+                            else
+                            {
+                                <a class="page-link" asp-action="ClassDetail" asp-route-id="@Model.ClassId" asp-route-slotsPage="@(currentPage - 1)">
+                                    <i class="fas fa-chevron-left"></i> Trước
+                                </a>
+                            }
+                        </li>
+
+                        <!-- Page Numbers -->
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" asp-action="ClassDetail" asp-route-id="@Model.ClassId" asp-route-slotsPage="@i">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <!-- Next Button -->
+                        <li class="page-item @(isLastPage ? "disabled" : "")">
+                            @if (isLastPage)
+                            {
+                                <span class="page-link">
+                                    Sau <i class="fas fa-chevron-right"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <a class="page-link" asp-action="ClassDetail" asp-route-id="@Model.ClassId" asp-route-slotsPage="@(currentPage + 1)">
+                                    Sau <i class="fas fa-chevron-right"></i>
+                                </a>
+                            }
+                        </li>
+                    </ul>
+                </nav>
+                
+                <div class="text-center text-white small mt-2">
+                    Trang @currentPage / @totalPages - Tổng @allSlots.Count phiên
+                </div>
+            }
+        }
+        else
+        {
+            <div class="glass-alert-info">
+                Chưa có phiên điểm danh nào
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,235 @@
+﻿@model List<AttendanceInfo>
+@{
+    ViewData["Title"] = "Quản Lý Điểm Danh";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>Quản Lý Điểm Danh</h1>
+        <small>Tổng: @ViewBag.Statistics.TotalRecords bản ghi</small>
+    </div>
+    <div class="topbar-actions">
+        <a asp-action="Attendance" class="topbar-action-btn">
+            <i class="fas fa-sync-alt"></i> Làm Mới
+        </a>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Có Mặt</h6>
+                <h2 class="text-white mb-0">@ViewBag.Statistics.PresentCount</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Đi Muộn</h6>
+                <h2 class="text-white mb-0">@ViewBag.Statistics.LateCount</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Vắng</h6>
+                <h2 class="text-white mb-0">@ViewBag.Statistics.AbsentCount</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="glass-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted">Vi Phạm</h6>
+                <h2 class="text-white mb-0">@ViewBag.Statistics.FlaggedCount</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="glass-header">
+        <h5 class="mb-0">
+            <i class="fas fa-clipboard-check icon-glow"></i> Lịch Sử Điểm Danh
+        </h5>
+    </div>
+
+    <div class="glass-body">
+        <!-- Filter Options -->
+        <div class="mb-4">
+            <div class="btn-group" role="group">
+                <a asp-action="Attendance" class="btn btn-outline-light @(ViewBag.CurrentStatus == null ? "active" : "")">
+                    <i class="fas fa-list"></i> Tất Cả
+                </a>
+                <a asp-action="Attendance" asp-route-status="@AttendanceStatus.Present" class="btn btn-outline-light @(ViewBag.CurrentStatus == AttendanceStatus.Present ? "active" : "")">
+                    <i class="fas fa-check"></i> Có Mặt
+                </a>
+                <a asp-action="Attendance" asp-route-status="@AttendanceStatus.Late" class="btn btn-outline-light @(ViewBag.CurrentStatus == AttendanceStatus.Late ? "active" : "")">
+                    <i class="fas fa-hourglass-end"></i> Đi Muộn
+                </a>
+                <a asp-action="Attendance" asp-route-status="@AttendanceStatus.Absent" class="btn btn-outline-light @(ViewBag.CurrentStatus == AttendanceStatus.Absent ? "active" : "")">
+                    <i class="fas fa-times"></i> Vắng
+                </a>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table glass-table">
+                <thead>
+                    <tr>
+                        <th>Sinh Viên</th>
+                        <th>Phiên</th>
+                        <th>Thời Gian</th>
+                        <th>Trạng Thái</th>
+                        <th>Khoảng Cách</th>
+                        <th>Vi Phạm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var record in Model)
+                    {
+                        <tr style="@(record.IsFlagged ? "background: rgba(239, 68, 68, 0.1);" : "")">
+                            <td>
+                                <strong>@record.StudentName</strong>
+                                <br />
+                                <small class="text-glass-muted">@record.StudentCode</small>
+                            </td>
+                            <td><strong>@record.SlotName</strong></td>
+                            <td>@record.CheckInTime.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <span class="badge @(record.Status == AttendanceStatus.Present ? "bg-success" : record.Status == AttendanceStatus.Late ? "bg-warning" : "bg-danger")">
+                                    @record.Status.ToString()
+                                </span>
+                            </td>
+                            <td>@record.DistanceFromClass.ToString("F2") m</td>
+                            <td>
+                                @if (record.IsFlagged)
+                                {
+                                    <span class="badge bg-danger" title="@record.FlagReason" style="cursor: help;">
+                                        <i class="fas fa-flag"></i> Vi Phạm
+                                    </span>
+                                    <div class="small text-white mt-1" style="max-width: 250px;">
+                                        @record.FlagReason
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Bình Thường
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Button -->
+                    <li class="page-item @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                        @if (ViewBag.CurrentPage <= 1)
+                        {
+                            <span class="page-link">
+                                <i class="fas fa-chevron-left"></i> Trước
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="page-link" asp-action="Attendance" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-status="@ViewBag.CurrentStatus">
+                                <i class="fas fa-chevron-left"></i> Trước
+                            </a>
+                        }
+                    </li>
+
+                    <!-- Page Numbers (Smart Display) -->
+                    @{
+                        int totalPages = ViewBag.TotalPages;
+                        int currentPage = ViewBag.CurrentPage;
+                        int startPage = Math.Max(1, currentPage - 2);
+                        int endPage = Math.Min(totalPages, currentPage + 2);
+                    }
+
+                    @if (startPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Attendance" asp-route-page="1" asp-route-status="@ViewBag.CurrentStatus">1</a>
+                        </li>
+                        @if (startPage > 2)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                    }
+
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Attendance" asp-route-page="@i" asp-route-status="@ViewBag.CurrentStatus">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    @if (endPage < totalPages)
+                    {
+                        @if (endPage < totalPages - 1)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Attendance" asp-route-page="@totalPages" asp-route-status="@ViewBag.CurrentStatus">
+                                @totalPages
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Next Button -->
+                    <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                        @if (ViewBag.CurrentPage >= ViewBag.TotalPages)
+                        {
+                            <span class="page-link">
+                                Sau <i class="fas fa-chevron-right"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="page-link" asp-action="Attendance" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-status="@ViewBag.CurrentStatus">
+                                Sau <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="text-center text-white small mt-3 mb-2">
+                <strong>Trang @ViewBag.CurrentPage / @ViewBag.TotalPages</strong> - Tổng @ViewBag.Statistics.TotalRecords bản ghi
+                @if (ViewBag.CurrentStatus != null)
+                {
+                    <br />
+                    <span class="badge bg-info">Lọc: @ViewBag.CurrentStatus</span>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-white small mt-3">
+                Tổng <strong>@ViewBag.Statistics.TotalRecords</strong> bản ghi
+            </div>
+        }
+    </div>
+</div>

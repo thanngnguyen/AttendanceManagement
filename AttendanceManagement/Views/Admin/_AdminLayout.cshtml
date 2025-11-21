@@ -1,0 +1,713 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #48bb78;
+            --danger-color: #f56565;
+            --warning-color: #ed8936;
+            --info-color: #4299e1;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* LEFT SIDEBAR */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, rgba(20, 20, 40, 0.95) 0%, rgba(30, 30, 50, 0.95) 100%);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .admin-sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Logo */
+        .sidebar-logo {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-logo a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .sidebar-logo i {
+            font-size: 24px;
+            color: #667eea;
+        }
+
+        /* Menu Items */
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin: 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+            border-left-color: #667eea;
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(102, 126, 234, 0.3);
+            color: white;
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            text-align: center;
+            color: #667eea;
+        }
+
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            color: #667eea;
+        }
+
+        /* Menu Section */
+        .sidebar-section {
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-section-title {
+            padding: 10px 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* User Info at Bottom */
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .user-role {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            display: block;
+        }
+
+        .sidebar-logout {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(245, 101, 101, 0.2);
+            border: 1px solid rgba(245, 101, 101, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .sidebar-logout:hover {
+            background: rgba(245, 101, 101, 0.3);
+            color: white;
+            border-color: rgba(245, 101, 101, 0.5);
+        }
+
+        /* MAIN CONTENT */
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* TOP BAR */
+        .admin-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .topbar-title h1 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .topbar-title small {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .topbar-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topbar-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        /* GLASS CARD STYLING */
+        .glass-bg-pink {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-header {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-body {
+            padding: 20px;
+        }
+
+        .glass-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .glass-link {
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .glass-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .text-white {
+            color: white !important;
+        }
+
+        .text-glass-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-glass {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* BUTTONS */
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-primary:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-gradient-success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-success:hover {
+            background: linear-gradient(135deg, #38a169, #48bb78);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-gradient-danger {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-danger:hover {
+            background: linear-gradient(135deg, #e53e3e, #f56565);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-gradient-warning {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-warning:hover {
+            background: linear-gradient(135deg, #dd6b20, #ed8936);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-gradient-info {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-info:hover {
+            background: linear-gradient(135deg, #3182ce, #4299e1);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-gradient-secondary {
+            background: linear-gradient(135deg, #718096, #4a5568);
+            border: none;
+            color: white;
+        }
+
+        .btn-gradient-secondary:hover {
+            background: linear-gradient(135deg, #4a5568, #718096);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-light {
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-outline-light:hover,
+        .btn-outline-light.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* TABLE */
+        .glass-table {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0;
+        }
+
+        .glass-table thead {
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-table thead th {
+            color: white;
+            font-weight: 600;
+            padding: 12px 15px;
+            border: none;
+        }
+
+        .glass-table tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .glass-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* RESPONSIVE */
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-sidebar a span,
+            .sidebar-section-title {
+                display: none;
+            }
+
+            .admin-sidebar a {
+                justify-content: center;
+                padding: 12px;
+            }
+
+            .admin-main {
+                margin-left: 70px;
+            }
+
+            .topbar-title h1 {
+                font-size: 18px;
+            }
+
+            .col-md-3 {
+                flex: 0 0 50%;
+            }
+
+            .col-md-6 {
+                flex: 0 0 100%;
+            }
+        }
+
+        /* ALERT */
+        .glass-alert-info {
+            background: rgba(66, 153, 225, 0.2);
+            border: 1px solid rgba(66, 153, 225, 0.4);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .glass-alert-danger {
+            background: rgba(245, 101, 101, 0.2);
+            border: 1px solid rgba(245, 101, 101, 0.4);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .glass-alert-success {
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid rgba(72, 187, 120, 0.4);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+        }
+
+        .breadcrumb-item {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        .breadcrumb-item a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item a:hover {
+            color: #764ba2;
+        }
+
+        /* ICON GLOW */
+        .icon-glow {
+            color: #667eea;
+        }
+
+        /* PAGINATION */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+        }
+
+        .page-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- LEFT SIDEBAR -->
+        <aside class="admin-sidebar">
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <a asp-controller="Admin" asp-action="Dashboard">
+                    <i class="fas fa-shield-alt bg-light"></i>
+                    <span>Admin</span>
+                </a>
+            </div>
+
+            <!-- Menu -->
+            <ul class="sidebar-menu">
+                <!-- Dashboard -->
+                <li class="sidebar-section">
+                    <div class="sidebar-section-title">Menu</div>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Dashboard" 
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Dashboard" ? "active" : "")">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- User Management -->
+                <li class="sidebar-section">
+                    <div class="sidebar-section-title">Quản Lý</div>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Users"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Users" || ViewContext.RouteData.Values["Action"]?.ToString() == "UserDetail" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditUser" ? "active" : "")">
+                        <i class="fas fa-users"></i>
+                        <span>Người Dùng</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Classes"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Classes" || ViewContext.RouteData.Values["Action"]?.ToString() == "ClassDetail" ? "active" : "")">
+                        <i class="fas fa-chalkboard"></i>
+                        <span>Lớp Học</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Attendance"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Attendance" ? "active" : "")">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Điểm Danh</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Flags"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Flags" ? "active" : "")">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Vi Phạm</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="LeaveRequests"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "LeaveRequests" ? "active" : "")">
+                        <i class="fas fa-file-medical"></i>
+                        <span>Đơn Xin Nghỉ</span>
+                    </a>
+                </li>
+
+                <!-- Reports -->
+                <li class="sidebar-section">
+                    <div class="sidebar-section-title">Báo Cáo</div>
+                </li>
+                <li>
+                    <a asp-controller="Admin" asp-action="Reports"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Reports" ? "active" : "")">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Báo Cáo</span>
+                    </a>
+                </li>
+
+                <!-- Back to App -->
+                <li class="sidebar-section">
+                    <div class="sidebar-section-title">Khác</div>
+                </li>
+                <li>
+                    <a asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Về Ứng Dụng</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Footer -->
+            <div class="sidebar-footer">
+                @if (User?.Identity?.IsAuthenticated ?? false)
+                {
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            @((User.Identity.Name ?? "").First().ToString().ToUpper())
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name">@User.Identity.Name</span>
+                            <span class="user-role">Admin</span>
+                        </div>
+                    </div>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="mt-2">
+                        <button type="submit" class="sidebar-logout">
+                            <i class="fas fa-sign-out-alt"></i> Đăng Xuất
+                        </button>
+                    </form>
+                }
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="admin-main">
+            <!-- Alerts -->
+            @if (!string.IsNullOrEmpty(TempData["SuccessMessage"]?.ToString()))
+            {
+                <div class="glass-alert-success mb-3">
+                    <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(TempData["ErrorMessage"]?.ToString()))
+            {
+                <div class="glass-alert-danger mb-3">
+                    <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                </div>
+            }
+
+            <!-- Content -->
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

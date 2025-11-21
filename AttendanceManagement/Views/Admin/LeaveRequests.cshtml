@@ -1,0 +1,159 @@
+﻿@model List<LeaveRequestManagementViewModel>
+@{
+    ViewData["Title"] = "Quản Lý Đơn Xin Nghỉ";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>Quản Lý Đơn Xin Nghỉ</h1>
+        <small>Tổng: @ViewBag.TotalCount đơn</small>
+    </div>
+    <div class="topbar-actions">
+        <a asp-action="LeaveRequests" class="topbar-action-btn">
+            <i class="fas fa-sync-alt"></i> Làm Mới
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="glass-header">
+        <h5 class="mb-0">
+            <i class="fas fa-file-medical icon-glow"></i> Danh Sách Đơn Xin Nghỉ
+        </h5>
+    </div>
+
+    <div class="glass-body">
+        <!-- Filter -->
+        <div class="mb-4">
+            <div class="btn-group" role="group">
+                <a asp-action="LeaveRequests" class="btn btn-outline-light @(ViewBag.CurrentStatus == null ? "active" : "")">
+                    Tất Cả (@ViewBag.TotalCount)
+                </a>
+                <a asp-action="LeaveRequests" asp-route-status="@LeaveRequestStatus.Pending" class="btn btn-outline-light @(ViewBag.CurrentStatus == LeaveRequestStatus.Pending ? "active" : "")">
+                    Chờ Duyệt
+                </a>
+                <a asp-action="LeaveRequests" asp-route-status="@LeaveRequestStatus.Approved" class="btn btn-outline-light @(ViewBag.CurrentStatus == LeaveRequestStatus.Approved ? "active" : "")">
+                    Đã Duyệt
+                </a>
+                <a asp-action="LeaveRequests" asp-route-status="@LeaveRequestStatus.Rejected" class="btn btn-outline-light @(ViewBag.CurrentStatus == LeaveRequestStatus.Rejected ? "active" : "")">
+                    Từ Chối
+                </a>
+            </div>
+        </div>
+
+        <!-- List -->
+        @foreach (var request in Model)
+        {
+            <div class="glass-box mb-3">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="text-white mb-2">
+                            <strong>@request.StudentName</strong>
+                            <span class="badge bg-info">@request.StudentCode</span>
+                        </h6>
+                        <div class="mb-2">
+                            <strong>Lớp:</strong> @request.ClassName | <strong>Phiên:</strong> @request.SlotName
+                        </div>
+                        <div class="mb-2">
+                            <strong>Lý Do:</strong> @request.Reason
+                        </div>
+                        <div class="mb-2">
+                            <strong>Email:</strong> <a href="mailto:@request.Email" class="glass-link">@request.Email</a>
+                        </div>
+                        <small class="text-glass-muted">
+                            <i class="fas fa-calendar"></i> @request.RequestedAt.ToString("dd/MM/yyyy HH:mm")
+                        </small>
+                        @if (!string.IsNullOrEmpty(request.EvidenceUrl))
+                        {
+                            <div class="mt-2">
+                                <a href="@request.EvidenceUrl" target="_blank" class="btn btn-gradient-info btn-sm">
+                                    <i class="fas fa-file"></i> Xem Minh Chứng
+                                </a>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge mb-3" style="background: @(request.Status == LeaveRequestStatus.Approved ? "#48bb78" : request.Status == LeaveRequestStatus.Pending ? "#ed8936" : "#f56565"); padding: 8px 12px;">
+                            @request.Status.ToString()
+                        </span>
+
+                        @if (request.Status == LeaveRequestStatus.Pending)
+                        {
+                            <div class="d-grid gap-2">
+                                <form asp-action="ReviewLeaveRequest" method="post" class="d-inline">
+                                    <input type="hidden" name="requestId" value="@request.RequestId" />
+                                    <input type="hidden" name="status" value="approved" />
+                                    <button type="submit" class="btn btn-gradient-success btn-sm w-100 mb-2">
+                                        <i class="fas fa-check"></i> Duyệt
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-gradient-danger btn-sm w-100" 
+                                        onclick="rejectRequest(@request.RequestId, '@request.StudentName')">
+                                    <i class="fas fa-times"></i> Từ Chối
+                                </button>
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(request.ReviewNote))
+                        {
+                            <div class="glass-alert-info" style="margin-top: 10px; font-size: 12px;">
+                                <strong>Ghi Chú:</strong><br />
+                                @request.ReviewNote
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="LeaveRequests" asp-route-page="@i" asp-route-status="@ViewBag.CurrentStatus">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function rejectRequest(requestId, studentName) {
+            const note = prompt(`Nhập lý do từ chối cho ${studentName}:`);
+            if (note !== null) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("ReviewLeaveRequest", "Admin")';
+
+                const requestIdInput = document.createElement('input');
+                requestIdInput.type = 'hidden';
+                requestIdInput.name = 'requestId';
+                requestIdInput.value = requestId;
+                form.appendChild(requestIdInput);
+
+                const statusInput = document.createElement('input');
+                statusInput.type = 'hidden';
+                statusInput.name = 'status';
+                statusInput.value = 'rejected';
+                form.appendChild(statusInput);
+
+                const noteInput = document.createElement('input');
+                noteInput.type = 'hidden';
+                noteInput.name = 'note';
+                noteInput.value = note;
+                form.appendChild(noteInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

@@ -129,10 +129,12 @@ namespace AttendanceManagement.Controllers
             }
 
             var isTeacher = slot.Class.TeacherId == user.Id;
+            var isAdmin = user.Role == UserRole.Admin;
             var isEnrolled = await _context.Enrollments
                 .AnyAsync(e => e.ClassId == slot.ClassId && e.StudentId == user.Id && e.IsActive);
 
-            if (!isTeacher && !isEnrolled)
+            // ✅ Admin hoặc Teacher lớp này hoặc sinh viên đã đăng ký
+            if (!isAdmin && !isTeacher && !isEnrolled)
             {
                 return Forbid();
             }
@@ -326,16 +328,24 @@ namespace AttendanceManagement.Controllers
                 double roundedLng = Math.Round(model.Longitude, 6);
 
                 double distance = 0;
-                bool isFlagged = false;
-                string flagReason = null;
+                bool isOutOfRange = false;
+                bool isDuplicateDevice = false;
+                bool isInvalidLocation = false;
+                string outOfRangeReason = null;
 
-                // Kiểm tra vị trí có vị trí hợp lệ
                 bool hasValidSlotLocation = slot.SlotLatitude.HasValue && slot.SlotLongitude.HasValue 
-                    && Math.Abs(slot.SlotLatitude.Value) <= 90 && Math.Abs(slot.SlotLongitude.Value) <= 180;
+                    && Math.Abs(slot.SlotLatitude.Value) <= 90 && Math.Abs(slot.SlotLongitude.Value) <= 180
+                    && slot.SlotLatitude.Value != 0 && slot.SlotLongitude.Value != 0;
 
-                if (hasValidSlotLocation)
+                if (!hasValidSlotLocation)
                 {
-                    bool hasValidUserLocation = Math.Abs(roundedLat) <= 90 && Math.Abs(roundedLng) <= 180 && !double.IsNaN(roundedLat) && !double.IsNaN(roundedLng);
+                    isInvalidLocation = true;
+                }
+                else
+                {
+                    bool hasValidUserLocation = Math.Abs(roundedLat) <= 90 && Math.Abs(roundedLng) <= 180 
+                        && !double.IsNaN(roundedLat) && !double.IsNaN(roundedLng)
+                        && roundedLat != 0 && roundedLng != 0;
 
                     if (hasValidUserLocation)
                     {
@@ -348,37 +358,40 @@ namespace AttendanceManagement.Controllers
 
                         if (distance > effectiveAllowedDistance)
                         {
-                            isFlagged = true;
-                            flagReason = $"Ngoài phạm vi cho phép: {distance:F2}m (cho phép: {effectiveAllowedDistance}m)";
+                            isOutOfRange = true;
+                            outOfRangeReason = $"Ngoài phạm vi cho phép: {distance:F2}m (cho phép: {effectiveAllowedDistance}m)";
                         }
                     }
                     else
                     {
-                        isFlagged = true;
-                        flagReason = "Không lấy được vị trí hợp lệ từ thiết bị";
+                        isInvalidLocation = true;
                     }
                 }
 
-                // Xác định tình trạng tham gia
                 var status = DateTime.Now > slot.StartTime.AddMinutes(15) 
                     ? AttendanceStatus.Late 
                     : AttendanceStatus.Present;
 
-                // Nhận thông tin thiết bị để phát hiện sự trùng lặp
                 var deviceInfo = Request.Headers["User-Agent"].ToString();
                 var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
 
-                var duplicateDevice = await _context.AttendanceRecords.AnyAsync(ar => 
-                    ar.SlotId == model.SlotId && ar.StudentId != user.Id &&
-                    (ar.DeviceInfo == deviceInfo || ar.IpAddress == ipAddress));
+                var duplicateDeviceRecords = await _context.AttendanceRecords
+                    .Where(ar => ar.SlotId == model.SlotId && ar.StudentId != user.Id)
+                    .ToListAsync();
 
-                if (duplicateDevice)
-                {
-                    isFlagged = true;
-                    flagReason = string.IsNullOrEmpty(flagReason)
-                        ? "Thiết bị hoặc IP trùng với sinh viên khác"
-                        : $"{flagReason}; Thiết bị hoặc IP trùng";
-                }
+                isDuplicateDevice = duplicateDeviceRecords.Any(ar => 
+                    (!string.IsNullOrEmpty(ar.DeviceInfo) && ar.DeviceInfo == deviceInfo) ||
+                    (!string.IsNullOrEmpty(ar.IpAddress) && ar.IpAddress == ipAddress));
+
+                bool isFlagged = (isOutOfRange || isDuplicateDevice) && !isInvalidLocation;
+                string flagReason = null;
+
+                if (isOutOfRange && isDuplicateDevice)
+                    flagReason = $"{outOfRangeReason}; Thiết bị hoặc IP trùng";
+                else if (isOutOfRange)
+                    flagReason = outOfRangeReason;
+                else if (isDuplicateDevice)
+                    flagReason = "Thiết bị hoặc IP trùng với sinh viên khác";
 
                 var record = new AttendanceRecord
                 {
@@ -403,10 +416,9 @@ namespace AttendanceManagement.Controllers
                 _context.AttendanceRecords.Add(record);
                 await _context.SaveChangesAsync();
 
-                // Thêm flag nếu cần
                 if (isFlagged)
                 {
-                    if (hasValidSlotLocation && distance > slot.AllowedDistanceMeters)
+                    if (isOutOfRange)
                         _context.AttendanceFlags.Add(new AttendanceFlag
                         {
                             RecordId = record.RecordId,
@@ -415,7 +427,7 @@ namespace AttendanceManagement.Controllers
                             FlaggedAt = DateTimeHelper.GetVietnamNow()
                         });
 
-                    if (duplicateDevice)
+                    if (isDuplicateDevice)
                         _context.AttendanceFlags.Add(new AttendanceFlag
                         {
                             RecordId = record.RecordId,
@@ -487,7 +499,6 @@ namespace AttendanceManagement.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 if (user == null) return NotFound();
 
-                // Kiểm tra xem đã được yêu cầu chưa
                 var hasRequested = await _context.LeaveRequests
                     .AnyAsync(lr => lr.SlotId == model.SlotId && lr.StudentId == user.Id);
 

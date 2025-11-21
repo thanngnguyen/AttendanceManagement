@@ -1,0 +1,84 @@
+﻿@model List<ClassManagementViewModel>
+@{
+    ViewData["Title"] = "Quản Lý Lớp Học";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>Quản Lý Lớp Học</h1>
+        <small>Tổng: @ViewBag.TotalCount lớp học</small>
+    </div>
+    <div class="topbar-actions">
+        <a asp-action="Classes" class="topbar-action-btn">
+            <i class="fas fa-sync-alt"></i> Làm Mới
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="glass-header">
+        <h5 class="mb-0">
+            <i class="fas fa-chalkboard icon-glow"></i> Danh Sách Lớp Học
+        </h5>
+    </div>
+
+    <div class="glass-body">
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table glass-table">
+                <thead>
+                    <tr>
+                        <th>Lớp</th>
+                        <th>Mã Lớp</th>
+                        <th>Giáo Viên</th>
+                        <th>Sinh Viên</th>
+                        <th>Phiên</th>
+                        <th>Trạng Thái</th>
+                        <th>Ngày Tạo</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var classItem in Model)
+                    {
+                        <tr>
+                            <td><strong>@classItem.ClassName</strong></td>
+                            <td><span class="badge bg-info">@classItem.ClassCode</span></td>
+                            <td>@classItem.TeacherName</td>
+                            <td>@classItem.StudentCount</td>
+                            <td>@classItem.SlotCount</td>
+                            <td>
+                                <span class="badge @(classItem.IsActive ? "bg-success" : "bg-secondary")">
+                                    @(classItem.IsActive ? "Hoạt Động" : "Tạm Dừng")
+                                </span>
+                            </td>
+                            <td>@classItem.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a asp-action="ClassDetail" asp-route-id="@classItem.ClassId" class="btn btn-gradient-info btn-sm">
+                                    <i class="fas fa-eye"></i> Chi Tiết
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Classes" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>

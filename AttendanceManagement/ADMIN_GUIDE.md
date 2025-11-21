@@ -1,0 +1,277 @@
+# Admin Management System
+
+H??ng d?n qu?n lý h? th?ng cho Admin
+
+## Tính N?ng Admin
+
+### 1. Dashboard (Trang Ch?)
+**???ng d?n:** `/Admin/Dashboard`
+
+Hi?n th?:
+- **Th?ng kê t?ng quát:**
+  - T?ng ng??i dùng (Giáo viên + Sinh viên)
+  - T?ng l?p h?c
+  - T?ng ?i?m danh & vi ph?m
+  - T?ng ??n xin ngh?
+  - T? l? ?i?m danh trung bình
+
+- **Danh sách:** 
+  - 5 ng??i dùng m?i nh?t
+  - 5 vi ph?m g?n ?ây
+  - Liên k?t nhanh ??n các qu?n lý
+
+### 2. Qu?n Lý Ng??i Dùng
+**???ng d?n:** `/Admin/Users`
+
+#### Xem Danh Sách
+- L?c theo vai trò: T?t C? / Sinh Viên / Giáo Viên / Admin
+- Phân trang (10 ng??i/trang)
+- Hi?n th?:
+  - Tên, Email
+  - Mã sinh viên (n?u có)
+  - Vai trò (Badge màu)
+  - S? l?p tham gia
+  - S? l?n ?i?m danh
+
+#### Xem Chi Ti?t Ng??i Dùng
+**???ng d?n:** `/Admin/UserDetail/{id}`
+
+**Thông tin cá nhân:**
+- Tên, Email, S? ?i?n tho?i
+- Mã sinh viên
+- Vai trò, Bio
+- Ngày t?o, L?n ??ng nh?p cu?i
+- Avatar (n?u có)
+
+**N?u là Giáo Viên:**
+- Danh sách l?p d?y
+  - Tên l?p, mã l?p
+  - S? sinh viên
+  - S? phiên ?i?m danh
+  - Tr?ng thái (Ho?t ??ng/T?m d?ng)
+
+**N?u là Sinh Viên:**
+- L?p tham gia
+  - Tên l?p, giáo viên
+  - Ngày tham gia
+  
+- L?ch s? ?i?m danh (10 g?n ?ây)
+  - Phiên, th?i gian
+  - Tr?ng thái (Có m?t/Mu?n)
+  - Kho?ng cách
+  - Vi ph?m (n?u có)
+  
+- ??n xin ngh?
+  - Lý do, ngày g?i
+  - Tr?ng thái (Ch?/Duy?t/T? ch?i)
+
+#### Ch?nh S?a Ng??i Dùng
+**???ng d?n:** `/Admin/EditUser/{id}`
+
+Có th? ch?nh s?a:
+- Tên ??y ??
+- Email
+- S? ?i?n tho?i
+- Mã sinh viên
+- Bio
+- **Vai trò** (Quan tr?ng!)
+
+### 3. Qu?n Lý L?p H?c
+**???ng d?n:** `/Admin/Classes`
+
+- Xem t?t c? l?p h?c
+- Phân trang (10 l?p/trang)
+- Thông tin:
+  - Tên l?p, mã l?p
+  - Giáo viên
+  - S? sinh viên
+  - S? phiên ?i?m danh
+  - Tr?ng thái
+
+#### Chi Ti?t L?p H?c
+**???ng d?n:** `/Admin/ClassDetail/{id}`
+
+Hi?n th?:
+- Thông tin l?p: tên, mã, môn h?c, phòng
+- Giáo viên d?y
+- Danh sách sinh viên (có th? xoá)
+- Danh sách phiên ?i?m danh
+
+### 4. Qu?n Lý ?i?m Danh
+**???ng d?n:** `/Admin/Attendance`
+
+- Xem t?t c? b?n ghi ?i?m danh
+- Th?ng kê:
+  - T?ng b?n ghi
+  - Có m?t / ?i mu?n / V?ng
+  - Vi ph?m
+  - T? l? ?i?m danh
+  
+- B?ng ?i?m danh:
+  - Sinh viên, phiên
+  - Th?i gian, tr?ng thái
+  - Kho?ng cách, vi ph?m
+
+### 5. Qu?n Lý Vi Ph?m
+**???ng d?n:** `/Admin/Flags`
+
+Qu?n lý t?t c? vi ph?m:
+- **Lo?i vi ph?m:**
+  - OutOfRange: Ngoài ph?m vi cho phép (> 100m)
+  - DuplicateDevice: Cùng thi?t b?, tài kho?n khác
+  - DuplicateIPAddress: Cùng IP, tài kho?n khác
+  - SuspiciousLocation: V? trí ?áng ng?
+  - Other: Khác
+
+- **B?ng vi ph?m:**
+  - Sinh viên, l?p, phiên
+  - Lo?i vi ph?m
+  - Lý do chi ti?t
+  - Ngày phát hi?n
+  - Tr?ng thái (Ch?a/?ã gi?i quy?t)
+
+- **Hành ??ng:**
+  - Nh?n nút ? ?? ?ánh d?u "?ã gi?i quy?t"
+  - Nh?n l?i ?? b? ?ánh d?u
+
+### 6. Qu?n Lý ??n Xin Ngh?
+**???ng d?n:** `/Admin/LeaveRequests`
+
+- L?c theo tr?ng thái:
+  - T?t c?
+  - Ch? duy?t (Pending)
+  - ?ã duy?t (Approved)
+  - T? ch?i (Rejected)
+
+- Thông tin:
+  - Sinh viên, l?p, phiên
+  - Lý do xin ngh?
+  - Minh ch?ng (n?u có)
+  - Ngày g?i
+  - Tr?ng thái
+
+- Xem chi ti?t ho?c duy?t tr?c ti?p
+
+### 7. Báo Cáo
+**???ng d?n:** `/Admin/Reports`
+
+Th?ng kê toàn b? h? th?ng:
+- **Ng??i dùng:**
+  - T?ng: X ng??i
+  - Giáo viên: Y ng??i
+  - Sinh viên: Z ng??i
+
+- **L?p h?c:**
+  - T?ng: X l?p
+  - Ho?t ??ng: Y l?p
+
+- **?i?m danh:**
+  - T?ng b?n ghi: X
+  - Vi ph?m: Y
+  - T? l? ph?m lu?t
+
+- **??n xin ngh?:**
+  - Ch? duy?t: X
+  - ?ã duy?t: Y
+  - T? ch?i: Z
+
+---
+
+## Các Tính N?ng Chi Ti?t
+
+### Qu?n Lý Vai Trò (Role)
+Admin có th? thay ??i vai trò c?a b?t k? ng??i dùng nào:
+
+1. Vào `/Admin/Users`
+2. Tìm ng??i dùng c?n thay ??i
+3. Click **Chi Ti?t** > **Ch?nh S?a**
+4. Ch?n vai trò m?i:
+   - **Student:** Sinh viên - có th? tham gia l?p, ?i?m danh
+   - **Teacher:** Giáo viên - có th? t?o l?p, t?o phiên
+   - **Admin:** Qu?n tr? viên - toàn quy?n
+
+### Phát Hi?n Gian L?n
+H? th?ng t? ??ng phát hi?n và ghi l?i:
+- ?i?m danh ngoài ph?m vi 100m
+- Nhi?u tài kho?n t? cùng thi?t b?
+- Nhi?u tài kho?n t? cùng IP
+- V? trí b?t th??ng
+
+Admin có th?:
+- Xem chi ti?t vi ph?m
+- ?ánh d?u "?ã gi?i quy?t"
+- Ghi chú gi?i pháp
+
+### Báo Cáo và Th?ng Kê
+Admin có th?:
+- Xem t?ng h?p th?ng kê t?t c? l?p
+- Theo dõi t? l? ?i?m danh
+- Phát hi?n các l?p có v?n ??
+- Theo dõi sinh viên v?ng ho?c vi ph?m
+
+---
+
+## Quy Trình Làm Vi?c
+
+### Duy?t ??n Xin Ngh?
+1. Vào `/Admin/LeaveRequests`
+2. L?c **Ch? duy?t**
+3. Click **Chi Ti?t** ?? xem:
+   - Thông tin sinh viên
+   - Lý do xin ngh?
+   - Minh ch?ng (n?u có)
+4. **Phê Duy?t** ho?c **T? Ch?i**
+   - Có th? thêm ghi chú
+5. Tr?ng thái ???c c?p nh?t
+
+### X? Lý Vi Ph?m
+1. Vào `/Admin/Flags`
+2. Xem chi ti?t vi ph?m
+3. Ki?m tra lo?i vi ph?m:
+   - OutOfRange: Sinh viên ? ngoài l?p
+   - Duplicate: Dùng chung thi?t b?/IP
+4. Liên h? sinh viên (n?u c?n)
+5. Click ? ?? **?ánh d?u ?ã gi?i quy?t**
+
+### Theo Dõi Sinh Viên
+1. Vào `/Admin/Users`
+2. Ch?n sinh viên
+3. Click **Chi Ti?t** ?? xem:
+   - L?p tham gia
+   - L?ch s? ?i?m danh
+   - ??n xin ngh?
+4. Ki?m tra vi ph?m ho?c v?ng
+5. Có th? ch?nh s?a thông tin n?u c?n
+
+---
+
+## L?u Ý Quan Tr?ng
+
+### B?o M?t
+- ?? Ch? Admin m?i có quy?n truy c?p
+- ?? Các hành ??ng ???c ghi l?i
+- ?? Không ???c xoá d? li?u (ch? ?ánh d?u)
+
+### D? Li?u
+- ? T?t c? thay ??i ???c l?u vào database
+- ?? Báo cáo d?a trên d? li?u th?c t?
+- ?? C?p nh?t real-time
+
+### Quy T?c
+- ?? M?i ng??i dùng = 1 tài kho?n
+- ?? M?i thi?t b? có Device ID duy nh?t
+- ?? M?i IP ???c ghi l?i
+- ? T?t c? th?i gian = Vietnam Time (UTC+7)
+
+---
+
+## H? Tr?
+
+N?u có v?n ??:
+1. Ki?m tra console (F12) có l?i gì không
+2. Xem logs trong ph?n báo cáo
+3. Liên h? developer
+
+---
+
+**Chúc b?n qu?n lý h? th?ng vui v?!** ??

@@ -1,0 +1,246 @@
+﻿@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>Dashboard</h1>
+        <small>Tổng quan hệ thống</small>
+    </div>
+    <div class="topbar-actions">
+        <a href="javascript:location.reload()" class="topbar-action-btn">
+            <i class="fas fa-sync-alt"></i> Làm Mới
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="glass-card stat-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted mt-3">Tổng Người Dùng</h6>
+                <h2 class="text-white mb-0">@Model.TotalUsers</h2>
+                <small class="text-glass-muted">
+                    GV: @Model.TotalTeachers | SV: @Model.TotalStudents
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="glass-card stat-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted mt-3">Lớp Học</h6>
+                <h2 class="text-white mb-0">@Model.TotalClasses</h2>
+                <small class="text-glass-muted">Đang hoạt động</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="glass-card stat-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted mt-3">Điểm Danh</h6>
+                <h2 class="text-white mb-0">@Model.TotalAttendanceRecords</h2>
+                <small class="text-glass-muted">
+                    Vi phạm: <strong>@Model.TotalFlaggedRecords</strong>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="glass-card stat-card">
+            <div class="glass-body">
+                <h6 class="text-glass-muted mt-3">Đơn Xin Nghỉ</h6>
+                <h2 class="text-white mb-0">@Model.TotalLeaveRequests</h2>
+                <small class="text-glass-muted">Chờ xử lý</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Users -->
+    <div class="col-lg-6 mb-4">
+        <div class="glass-card">
+            <div class="glass-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-plus icon-glow"></i> Người Dùng Mới Nhất
+                </h5>
+            </div>
+            <div class="glass-body">
+                <div class="table-responsive">
+                    <table class="table glass-table">
+                        <thead>
+                            <tr>
+                                <th>Tên</th>
+                                <th>Email</th>
+                                <th>Vai Trò</th>
+                                <th>Ngày Tạo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.RecentUsers)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-action="UserDetail" asp-route-id="@user.Id" class="glass-link">
+                                            @user.FullName
+                                        </a>
+                                    </td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        <span class="badge" style="background: @(user.Role == UserRole.Admin ? "#ef4444" : user.Role == UserRole.Teacher ? "#f59e0b" : "#10b981")">
+                                            @user.Role.ToString()
+                                        </span>
+                                    </td>
+                                    <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a asp-action="Users" class="btn btn-gradient-primary btn-sm">
+                        <i class="fas fa-eye"></i> Xem Tất Cả
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Flags -->
+    <div class="col-lg-6 mb-4">
+        <div class="glass-card">
+            <div class="glass-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle icon-glow"></i> Vi Phạm Gần Đây
+                </h5>
+            </div>
+            <div class="glass-body">
+                <div class="table-responsive">
+                    <table class="table glass-table">
+                        <thead>
+                            <tr>
+                                <th>Sinh Viên</th>
+                                <th>Lớp</th>
+                                <th>Loại</th>
+                                <th>Ngày</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var flag in Model.RecentFlags)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@flag.StudentName</strong>
+                                        <br />
+                                        <small class="text-glass-muted">@flag.StudentCode</small>
+                                    </td>
+                                    <td>@flag.ClassName</td>
+                                    <td>
+                                        <span class="badge bg-danger">@flag.Type.ToString()</span>
+                                    </td>
+                                    <td>@flag.FlaggedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a asp-action="Flags" class="btn btn-gradient-danger btn-sm">
+                        <i class="fas fa-eye"></i> Xem Tất Cả
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Management Links -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="glass-card">
+            <div class="glass-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tools icon-glow"></i> Quản Lý
+                </h5>
+            </div>
+            <div class="glass-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a asp-action="Users" class="btn btn-gradient-primary w-100">
+                            <i class="fas fa-users"></i> Quản Lý Người Dùng
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a asp-action="Classes" class="btn btn-gradient-success w-100">
+                            <i class="fas fa-chalkboard"></i> Quản Lý Lớp Học
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a asp-action="Attendance" class="btn btn-gradient-info w-100">
+                            <i class="fas fa-clipboard-check"></i> Quản Lý Điểm Danh
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a asp-action="LeaveRequests" class="btn btn-gradient-warning w-100">
+                            <i class="fas fa-file-medical"></i> Quản Lý Đơn Xin Nghỉ
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a asp-action="Flags" class="btn btn-gradient-danger w-100">
+                            <i class="fas fa-exclamation-triangle"></i> Quản Lý Vi Phạm
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a asp-action="Reports" class="btn btn-gradient-secondary w-100">
+                            <i class="fas fa-chart-bar"></i> Báo Cáo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-card {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .glass-table {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .glass-table thead {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+</style>

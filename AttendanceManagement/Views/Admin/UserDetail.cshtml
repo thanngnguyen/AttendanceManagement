@@ -1,0 +1,389 @@
+﻿@model UserDetailViewModel
+@{
+    ViewData["Title"] = $"Chi Tiết - {Model.FullName}";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<!-- Top Bar -->
+<div class="admin-topbar">
+    <div class="topbar-title">
+        <h1>@Model.FullName</h1>
+        <small>@Model.Role.ToString() - @Model.Email</small>
+    </div>
+    <div class="topbar-actions">
+        <a asp-action="EditUser" asp-route-id="@Model.Id" class="topbar-action-btn">
+            <i class="fas fa-edit"></i> Chỉnh Sửa
+        </a>
+        <a asp-action="Users" class="topbar-action-btn">
+            <i class="fas fa-arrow-left"></i> Quay Lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- User Info -->
+    <div class="col-lg-4 mb-4">
+        <div class="glass-card">
+            <div class="glass-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user icon-glow"></i> Thông Tin Cá Nhân
+                </h5>
+            </div>
+            <div class="glass-body">
+                @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                {
+                    <img src="@Model.ProfileImageUrl" alt="Avatar" class="img-fluid rounded mb-3" style="max-height: 200px; object-fit: cover;">
+                }
+
+                <div class="glass-box mb-2">
+                    <strong>Tên:</strong> @Model.FullName
+                </div>
+                <div class="glass-box mb-2">
+                    <strong>Email:</strong> <a href="mailto:@Model.Email" class="glass-link">@Model.Email</a>
+                </div>
+                <div class="glass-box mb-2">
+                    <strong>Số Điện Thoại:</strong> @(string.IsNullOrEmpty(Model.PhoneNumber) ? "Chưa cập nhật" : Model.PhoneNumber)
+                </div>
+                <div class="glass-box mb-2">
+                    <strong>Vai Trò:</strong>
+                    <span class="badge" style="background: @(Model.Role == UserRole.Admin ? "#ef4444" : Model.Role == UserRole.Teacher ? "#f59e0b" : "#10b981")">
+                        @Model.Role.ToString()
+                    </span>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.StudentId))
+                {
+                    <div class="glass-box mb-2">
+                        <strong>Mã SV:</strong> @Model.StudentId
+                    </div>
+                }
+                <div class="glass-box mb-2">
+                    <strong>Ngày Tạo:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                </div>
+                <div class="glass-box mb-3">
+                    <strong>Đăng Nhập Cuối:</strong> @(Model.LastLoginAt?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa đăng nhập")
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Bio))
+                {
+                    <div class="glass-alert-info">
+                        <strong>Bio:</strong><br />
+                        @Model.Bio
+                    </div>
+                }
+
+                <div class="d-grid gap-2">
+                    <a asp-action="EditUser" asp-route-id="@Model.Id" class="btn btn-gradient-warning">
+                        <i class="fas fa-edit"></i> Chỉnh Sửa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Content -->
+    <div class="col-lg-8">
+        @if (Model.Role == UserRole.Teacher)
+        {
+            <!-- Teaching Classes -->
+            <div class="glass-card mb-4">
+                <div class="glass-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chalkboard icon-glow"></i> Lớp Dạy (@Model.TeachingClasses.Count)
+                    </h5>
+                </div>
+                <div class="glass-body">
+                    @if (Model.TeachingClasses.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table glass-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên Lớp</th>
+                                        <th>Mã Lớp</th>
+                                        <th>Sinh Viên</th>
+                                        <th>Phiên</th>
+                                        <th>Trạng Thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var classInfo in Model.TeachingClasses)
+                                    {
+                                        <tr>
+                                            <td><strong>@classInfo.ClassName</strong></td>
+                                            <td><span class="badge bg-info">@classInfo.ClassCode</span></td>
+                                            <td>@classInfo.StudentCount</td>
+                                            <td>@classInfo.SlotCount</td>
+                                            <td>
+                                                <span class="badge @(classInfo.IsActive ? "bg-success" : "bg-secondary")">
+                                                    @(classInfo.IsActive ? "Hoạt Động" : "Tạm Dừng")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="glass-alert-info">
+                            Chưa có lớp học
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (Model.Role == UserRole.Student)
+        {
+            <!-- Enrolled Classes -->
+            <div class="glass-card mb-4">
+                <div class="glass-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book icon-glow"></i> Lớp Tham Gia (@Model.EnrolledClasses.Count)
+                    </h5>
+                </div>
+                <div class="glass-body">
+                    @if (Model.EnrolledClasses.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table glass-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên Lớp</th>
+                                        <th>Giáo Viên</th>
+                                        <th>Ngày Tham Gia</th>
+                                        <th>Trạng Thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var enrollment in Model.EnrolledClasses)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@enrollment.ClassName</strong>
+                                                <br />
+                                                <small class="text-glass-muted">@enrollment.ClassCode</small>
+                                            </td>
+                                            <td>@enrollment.TeacherName</td>
+                                            <td>@enrollment.EnrolledAt.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                <span class="badge @(enrollment.IsActive ? "bg-success" : "bg-secondary")">
+                                                    @(enrollment.IsActive ? "Hoạt Động" : "Ngừng")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="glass-alert-info">
+                            Chưa tham gia lớp nào
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Attendance History -->
+            <div class="glass-card mb-4">
+                <div class="glass-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-check icon-glow"></i> Lịch Sử Điểm Danh (@Model.AttendanceHistory.Count)
+                    </h5>
+                </div>
+                <div class="glass-body">
+                    @if (Model.AttendanceHistory.Any())
+                    {
+                        var allAttendance = Model.AttendanceHistory.OrderByDescending(a => a.CheckInTime).ToList();
+                        var pageSize = 5;
+                        var currentPage = (int)(ViewBag.AttendancePage ?? 1);
+                        var totalPages = (int)Math.Ceiling((double)allAttendance.Count / pageSize);
+                        var paginatedAttendance = allAttendance.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+                        var isFirstPage = currentPage <= 1;
+                        var isLastPage = currentPage >= totalPages;
+                        
+                        <div class="table-responsive">
+                            <table class="table glass-table">
+                                <thead>
+                                    <tr>
+                                        <th>Phiên</th>
+                                        <th>Thời Gian</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Khoảng Cách</th>
+                                        <th>Vi Phạm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var attendance in paginatedAttendance)
+                                    {
+                                        <tr style="@(attendance.IsFlagged ? "background: rgba(239, 68, 68, 0.1);" : "")">
+                                            <td><strong>@attendance.SlotName</strong></td>
+                                            <td>@attendance.CheckInTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <span class="badge @(attendance.Status == AttendanceStatus.Present ? "bg-success" : attendance.Status == AttendanceStatus.Late ? "bg-warning" : "bg-danger")">
+                                                    @attendance.Status.ToString()
+                                                </span>
+                                            </td>
+                                            <td>@attendance.DistanceFromClass.ToString("F2") m</td>
+                                            <td>
+                                                @if (attendance.IsFlagged)
+                                                {
+                                                    <span class="badge bg-danger" title="@attendance.FlagReason" style="cursor: help;">
+                                                        <i class="fas fa-exclamation-triangle"></i> Vi Phạm
+                                                    </span>
+                                                    <div class="small text-white mt-1" style="max-width: 200px;">
+                                                        @attendance.FlagReason
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle"></i> Bình Thường
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        @if (totalPages > 1)
+                        {
+                            <nav aria-label="Page navigation" class="mt-3">
+                                <ul class="pagination justify-content-center">
+                                    <!-- Previous Button -->
+                                    <li class="page-item @(isFirstPage ? "disabled" : "")">
+                                        @if (isFirstPage)
+                                        {
+                                            <span class="page-link">
+                                                <i class="fas fa-chevron-left"></i> Trước
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <a class="page-link" asp-action="UserDetail" asp-route-id="@Model.Id" asp-route-attendancePage="@(currentPage - 1)">
+                                                <i class="fas fa-chevron-left"></i> Trước
+                                            </a>
+                                        }
+                                    </li>
+
+                                    <!-- Page Numbers -->
+                                    @{
+                                        var startPage = Math.Max(1, currentPage - 2);
+                                        var endPage = Math.Min(totalPages, currentPage + 2);
+                                    }
+
+                                    @if (startPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="UserDetail" asp-route-id="@Model.Id" asp-route-attendancePage="1">1</a>
+                                        </li>
+                                        @if (startPage > 2)
+                                        {
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        }
+                                    }
+
+                                    @for (int i = startPage; i <= endPage; i++)
+                                    {
+                                        <li class="page-item @(i == currentPage ? "active" : "")">
+                                            <a class="page-link" asp-action="UserDetail" asp-route-id="@Model.Id" asp-route-attendancePage="@i">
+                                                @i
+                                            </a>
+                                        </li>
+                                    }
+
+                                    @if (endPage < totalPages)
+                                    {
+                                        @if (endPage < totalPages - 1)
+                                        {
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        }
+                                        <li class="page-item">
+                                            <a class="page-link" asp-action="UserDetail" asp-route-id="@Model.Id" asp-route-attendancePage="@totalPages">
+                                                @totalPages
+                                            </a>
+                                        </li>
+                                    }
+
+                                    <!-- Next Button -->
+                                    <li class="page-item @(isLastPage ? "disabled" : "")">
+                                        @if (isLastPage)
+                                        {
+                                            <span class="page-link">
+                                                Sau <i class="fas fa-chevron-right"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <a class="page-link" asp-action="UserDetail" asp-route-id="@Model.Id" asp-route-attendancePage="@(currentPage + 1)">
+                                                Sau <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        }
+                                    </li>
+                                </ul>
+                            </nav>
+
+                            <div class="text-center text-white small mt-2">
+                                Trang @currentPage / @totalPages - Tổng @allAttendance.Count bản ghi
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="glass-alert-info">
+                            Chưa có lịch sử điểm danh
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Leave Requests -->
+            <div class="glass-card">
+                <div class="glass-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-medical icon-glow"></i> Đơn Xin Nghỉ (@Model.LeaveRequests.Count)
+                    </h5>
+                </div>
+                <div class="glass-body">
+                    @if (Model.LeaveRequests.Any())
+                    {
+                        @foreach (var leave in Model.LeaveRequests.OrderByDescending(l => l.RequestedAt).Take(5))
+                        {
+                            <div class="glass-box mb-2">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <strong>@leave.SlotName</strong>
+                                        <br />
+                                        <small>Lý do: @leave.Reason</small>
+                                        <br />
+                                        <small class="text-glass-muted">@leave.RequestedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <span class="badge @(leave.Status == LeaveRequestStatus.Approved ? "bg-success" : leave.Status == LeaveRequestStatus.Pending ? "bg-warning" : "bg-danger")">
+                                            @leave.Status.ToString()
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="glass-alert-info">
+                            Chưa có đơn xin nghỉ
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
